@@ -1,0 +1,1 @@
+{"intents": [{"name": "PieceIntent", "slots": [{"name": "Piece", "values": [{"name": "king", "words": ["king", "baron"]}, {"name": "queen", "words": ["queen"]}, {"name": "rook", "words": ["rook", "tower", "castle"]}, {"name": "bishop", "words": ["bishop"]}, {"name": "knight", "words": ["knight", "horse"]}, {"name": "pawn", "words": ["pawn"]}]}]}]}

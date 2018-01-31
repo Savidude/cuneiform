@@ -1,0 +1,6 @@
+{
+  "max-clients" : 10,
+  "port" : 5002,
+  "dialog-manager-port" : 5003,
+  "responder-port" : 5001
+}

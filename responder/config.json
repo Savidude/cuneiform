@@ -1,0 +1,9 @@
+{
+  "max-clients" : 10,
+  "session": {
+    "max-age" : 1800,
+    "clean-frequency" : 60
+  },
+  "port" : 5001,
+  "classifier-port" : 5002
+}

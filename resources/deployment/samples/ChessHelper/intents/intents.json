@@ -1,0 +1,76 @@
+{
+  "intents" : [
+    {
+      "name" : "OverviewIntent",
+      "sample_utterances" : [
+        "How do i play",
+        "How do i play chess",
+        "give me an overview of chess",
+        "give me an overview",
+        "What are the rules",
+        "What are the rules for chess",
+        "What are the rules to chess"
+      ],
+      "slots" : []
+    },
+    {
+      "name" : "SetupIntent",
+      "sample_utterances" : [
+        "how do i set up a chess game",
+        "how do i set up chess",
+        "how do i set up a chess board",
+        "how do i set up a game of chess",
+        "how do i set up"
+      ],
+      "slots" : []
+    },
+    {
+      "name" : "GoalIntent",
+      "sample_utterances" : [
+        "how do i win a game",
+        "how do i win a game of chess",
+        "how do i win chess",
+        "how do i win",
+        "what is the goal of chess",
+        "what is the goal"
+      ],
+      "slots" : []
+    },
+    {
+      "name" : "TipIntent",
+      "sample_utterances" : [
+        "can i have a chess tip please",
+        "give me a chess tip"
+      ],
+      "slots" : []
+    },
+    {
+      "name" : "PieceIntent",
+      "sample_utterances" : [
+        "tell me about {Piece}"
+      ],
+      "slots" : [
+        {
+          "name" : "Piece",
+          "type" : "custom",
+          "values" : ["king", "queen", "rook", "bishop", "knight", "pawn"],
+          "use_synonyms" : true,
+          "synonyms" : [
+            {
+              "value" : "king",
+              "synonyms" : ["baron"]
+            },
+            {
+              "value" : "rook",
+              "synonyms" : ["tower", "castle"]
+            },
+            {
+              "value" : "knight",
+              "synonyms" : ["horse"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

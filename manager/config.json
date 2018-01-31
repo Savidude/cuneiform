@@ -1,0 +1,4 @@
+{
+  "max-clients" : 10,
+  "dialogue_manager_port" : 5003
+}

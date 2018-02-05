@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>{{title}}</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700italic,700,900,900italic" rel="stylesheet">
+
+    <!-- STYLESHEETS -->
+    <style type="text/css">
+        [fuse-cloak],
+        .fuse-cloak {
+            display: none !important;
+        }
+    </style>
+    <!-- Icons.css -->
+    <link type="text/css" rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
+    <!-- Fuse Html -->
+    <link type="text/css" rel="stylesheet" href="vendor/fuse-html/fuse-html.min.css" />
+    <!--Animate CSS-->
+    <link type="text/css" rel="stylesheet" href="bower_components/animate.css/animate.min.css" />
+    <!-- Main CSS -->
+    <link type="text/css" rel="stylesheet" href="stylesheets/main.css">
+    <!--Style CSS-->
+    <link type="text/css" rel="stylesheet" href="stylesheets/style.css">
+    <!-- / STYLESHEETS -->
+
+    <!-- JAVASCRIPT -->
+    <!-- jQuery -->
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- Fuse Html -->
+    <script type="text/javascript" src="vendor/fuse-html/fuse-html.min.js"></script>
+    <!--New App JS-->
+    <script type="text/javascript" src="javascripts/new-app.js"></script>
+    <!-- / JAVASCRIPT -->
+</head>
+
+<body class="layout layout-vertical layout-left-navigation layout-below-toolbar">
+<main>
+    <div id="wrapper">
+        <aside id="aside" class="aside aside-left" data-fuse-bar="aside" data-fuse-bar-media-step="md" data-fuse-bar-position="left">
+            <div class="aside-content-wrapper">
+
+                <div class="aside-content bg-primary-700 text-auto">
+
+                    <div class="aside-toolbar">
+
+                        <div class="logo">
+                            <img class="cuneiform-logo" src="images/logo-horizontal.png">
+                        </div>
+
+                        <button id="toggle-fold-aside-button" type="button" class="btn btn-icon d-none d-lg-block" data-fuse-aside-toggle-fold>
+                            <i class="mdi mdi-backburger"></i>
+                        </button>
+
+                    </div>
+
+                    <ul class="nav flex-column custom-scrollbar" id="sidenav" data-children=".nav-item">
+                        <li class="nav-item" role="tab">
+                            <a class="nav-link ripple with-arrow collapsed" data-toggle="collapse"
+                               data-target="#collapse-apps" href="#" aria-expanded="false"
+                               aria-controls="collapse-apps">
+
+                                <span id="app-name">App Name</span>
+                            </a>
+                            <ul id="collapse-apps" class='collapse ' role="tabpanel" aria-labelledby="heading-apps" data-children=".nav-item">
+
+                                <li class="nav-item">
+                                    <a class="nav-link ripple " data-toggle="modal" data-target="#createAppModal">
+                                        <i class="mdi mdi-folder-plus"></i>
+                                        <span>Create New App</span>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link ripple ">
+                                        <i class="mdi mdi-upload"></i>
+                                        <span>Upload Existing App</span>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+
+                        <li class="subheader">
+                            <span>Intents</span>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link ripple ">
+                                <i class="mdi mdi-plus"></i>
+                                <span>Create Intent</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item intent-search">
+                            <input type="text" class="search-input form-control" placeholder="search intents"
+                                   aria-label="search intents" />
+                        </li>
+
+
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <nav id="toolbar" class="bg-white">
+                <div class="row no-gutters align-items-center flex-nowrap">
+                    <div class="col">
+                        <div class="row no-gutters align-items-center flex-nowrap intent-name">
+                            <h1 class="display-3" id="intent-name"></h1>
+                        </div>
+                    </div>
+
+                    <div class="col-auto">
+                        <div class="row no-gutters align-items-center justify-content-end">
+                            <button type="button" class="quick-panel-button btn btn-icon" onclick="toggleTry()"
+                                    data-toggle="tooltip" data-placement="bottom" title="Try it now!">
+                                <i class="mdi mdi-message-text"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="content custom-scrollbar">
+                <div class="page-layout simple right-sidebar">
+                    <div class="page-content-wrapper custom-scrollbar">
+                        <!-- CONTENT -->
+                        <div class="p-6">
+
+                        </div>
+                        <!-- / CONTENT -->
+                    </div>
+
+                    <aside id="properties" class="aside aside-right animated slideInRight" data-fuse-bar="properties"
+                           data-fuse-bar-media-step="md" data-fuse-bar-position="right">
+                        <div class="list-group" class="date">
+
+                            <div class="list-group-item subheader">TODAY</div>
+
+                            <div class="list-group-item two-line">
+
+                                <div class="text-muted">
+
+                                    <div class="h1"> Saturday</div>
+
+                                    <div class="h2 row no-gutters align-items-start">
+                                        <span> 1</span>
+                                        <span class="h6">th</span>
+                                        <span> Jan</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="list-group">
+
+                            <div class="list-group-item subheader">Events</div>
+
+                            <div class="list-group-item two-line">
+
+                                <div class="list-item-content">
+                                    <h3>Group Meeting</h3>
+                                    <p>In 32 Minutes, Room 1B</p>
+                                </div>
+                            </div>
+
+                            <div class="list-group-item two-line">
+
+                                <div class="list-item-content">
+                                    <h3>Public Beta Release</h3>
+                                    <p>11:00 PM</p>
+                                </div>
+                            </div>
+
+                            <div class="list-group-item two-line">
+
+                                <div class="list-item-content">
+                                    <h3>Dinner with David</h3>
+                                    <p>17:30 PM</p>
+                                </div>
+                            </div>
+
+                            <div class="list-group-item two-line">
+
+                                <div class="list-item-content">
+                                    <h3>Q&amp;A Session</h3>
+                                    <p>20:30 PM</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="list-group">
+
+                            <div class="list-group-item subheader">Notes</div>
+
+                            <div class="list-group-item two-line">
+
+                                <div class="list-item-content">
+                                    <h3>Best songs to listen while working</h3>
+                                    <p>Last edit: May 8th, 2015</p>
+                                </div>
+                            </div>
+
+                            <div class="list-group-item two-line">
+
+                                <div class="list-item-content">
+                                    <h3>Useful subreddits</h3>
+                                    <p>Last edit: January 12th, 2015</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="list-group">
+
+                            <div class="list-group-item subheader">Quick Settings</div>
+
+                            <div class="list-group-item">
+
+                                <div class="list-item-content">
+                                    <h3>Notifications</h3>
+                                </div>
+
+                                <div class="secondary-container">
+                                    <label class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" />
+                                        <span class="custom-control-indicator"></span>
+                                    </label>
+                                </div>
+
+                            </div>
+
+                            <div class="list-group-item">
+
+                                <div class="list-item-content">
+                                    <h3>Cloud Sync</h3>
+                                </div>
+
+                                <div class="secondary-container">
+                                    <label class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" />
+                                        <span class="custom-control-indicator"></span>
+                                    </label>
+                                </div>
+
+                            </div>
+
+                            <div class="list-group-item">
+
+                                <div class="list-item-content">
+                                    <h3>Retro Thrusters</h3>
+                                </div>
+
+                                <div class="secondary-container">
+
+                                    <label class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" />
+                                        <span class="custom-control-indicator"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <div id="createAppModal" class="modal fade" tabindex="-1" role="dialog"
+                 aria-labelledby="createAppModal" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createAppModalLabel">Create New App</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="App name"
+                                       aria-label="App name" aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-secondary" type="button">Create</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-panel-sidebar custom-scrollbar" fuse-cloak data-fuse-bar="quick-panel-sidebar" data-fuse-bar-position="right">
+
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+
+</html>

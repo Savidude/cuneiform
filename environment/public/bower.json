@@ -1,0 +1,22 @@
+{
+  "name": "cuneiform",
+  "authors": [
+    "savidurd@gmail.com"
+  ],
+  "description": "Cuneiform development interface",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "mdi": "^2.1.19",
+    "jquery": "^3.3.1",
+    "bootstrap": "^4.0.0",
+    "animate.css": "^3.5.2"
+  }
+}

@@ -1,4 +1,6 @@
 .idea
+bower_components
+node_modules
 *.db
 *.log
 resources/deployment/applications/*

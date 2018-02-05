@@ -1,0 +1,125 @@
+$grid-breakpoints: (
+    xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px
+) !default;
+
+@function breakpoint-next($name, $breakpoints: $grid-breakpoints, $breakpoint-names: map-keys($breakpoints)) {
+    $n: index($breakpoint-names, $name);
+    @return if($n < length($breakpoint-names), nth($breakpoint-names, $n + 1), null);
+}
+
+@function breakpoint-min($name, $breakpoints: $grid-breakpoints) {
+    $min: map-get($breakpoints, $name);
+    @return if($min != 0, $min, null);
+}
+
+@function breakpoint-max($name, $breakpoints: $grid-breakpoints) {
+    $next: breakpoint-next($name, $breakpoints);
+    @return if($next, breakpoint-min($next, $breakpoints) - 1px, null);
+}
+
+// Media of at most the maximum breakpoint width. No query for the largest breakpoint.
+// Makes the @content apply to the given breakpoint and narrower.
+@mixin media-breakpoint-down($name, $breakpoints: $grid-breakpoints) {
+    $max: breakpoint-max($name, $breakpoints);
+    @if $max {
+        @media (max-width: $max) {
+            @content;
+        }
+    } @else {
+        @content;
+    }
+}
+
+[data-fuse-bar] {
+
+    &.fuse-bar {
+        position: absolute !important;
+        box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.25);
+        z-index: 1021;
+        display: block;
+        text-align: left;
+        overflow: auto;
+        transition: transform 300ms ease;
+        display: block;
+        background-color: white;
+
+        &.fuse-bar-open {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        &.fuse-bar-closed {
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        &.fixed-position {
+            position: fixed;
+        }
+
+        &.position-top,
+        &.position-bottom {
+            max-height: 100%;
+        }
+
+        &.position-left,
+        &.position-right {
+            max-width: 90%;
+        }
+
+        &.position-right {
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: auto;
+            transform: translate3D(100%, 0, 0);
+        }
+
+        &.position-left {
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: auto;
+            transform: translate3D(-100%, 0, 0);
+        }
+
+        &.position-top {
+            top: 0;
+            bottom: auto;
+            left: 0;
+            right: 0;
+            transform: translate3D(0, -100%, 0);
+        }
+
+        &.position-bottom {
+            top: auto;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transform: translate3D(0, 100%, 0);
+        }
+    }
+}
+
+.fuse-bar-backdrop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1020;
+    background: rgba(0, 0, 0, 0.54);
+}
+
+@each $breakpoint in 'sm', 'md', 'lg' {
+    @include media-breakpoint-down($breakpoint) {
+        [data-fuse-bar-media-step="#{$breakpoint}"] {
+            position: absolute!important;
+            visibility: hidden;
+        }
+    }
+}

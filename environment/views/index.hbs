@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>{{title}}</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="shortcut icon" type="image/x-icon" href="public/favicon.ico" />
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700italic,700,900,900italic" rel="stylesheet">
+
+    <!-- STYLESHEETS -->
+    <style type="text/css">
+        [fuse-cloak],
+        .fuse-cloak {
+            display: none !important;
+        }
+    </style>
+    <!-- Icons.css -->
+    <link type="text/css" rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
+    <!-- Fuse Html -->
+    <link type="text/css" rel="stylesheet" href="vendor/fuse-html/fuse-html.min.css" />
+    <!-- Main CSS -->
+    <link type="text/css" rel="stylesheet" href="stylesheets/main.css">
+    <!--Style CSS-->
+    <link type="text/css" rel="stylesheet" href="stylesheets/style.css">
+    <!-- / STYLESHEETS -->
+
+    <!-- JAVASCRIPT -->
+    <!-- jQuery -->
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- Fuse Html -->
+    <script type="text/javascript" src="vendor/fuse-html/fuse-html.min.js"></script>
+    <!--Script JS-->
+    <script type="text/javascript" src="javascripts/script.js"></script>
+    <!-- / JAVASCRIPT -->
+</head>
+
+<body class="layout layout-vertical layout-left-navigation layout-below-toolbar">
+<main>
+    <div id="wrapper">
+        <aside id="aside" class="aside aside-left" data-fuse-bar="aside" data-fuse-bar-media-step="md" data-fuse-bar-position="left">
+            <div class="aside-content-wrapper">
+
+                <div class="aside-content bg-primary-700 text-auto">
+
+                    <div class="aside-toolbar">
+
+                        <div class="logo">
+                            <img class="cuneiform-logo" src="images/logo-horizontal.png">
+                        </div>
+
+                        <button id="toggle-fold-aside-button" type="button" class="btn btn-icon d-none d-lg-block" data-fuse-aside-toggle-fold>
+                            <i class="mdi mdi-backburger"></i>
+                        </button>
+
+                    </div>
+
+                    <ul class="nav flex-column custom-scrollbar" id="sidenav" data-children=".nav-item">
+
+                        <li class="subheader">
+                            <span>APPS</span>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link ripple " data-toggle="modal"
+                               data-target="#createAppModal">
+                                <i class="mdi mdi-folder-plus"></i>
+                                <span>Create App</span>
+                            </a>
+                        </li>
+
+                        <li class="subheader">
+                            <span>RESOURCES</span>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link ripple">
+                                <i class="mdi mdi-file-document"></i>
+                                <span>Docs</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link ripple ">
+                                <i class="mdi mdi-forum"></i>
+                                <span>Discussion</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+        <div class="content-wrapper">
+            <div class="content custom-scrollbar">
+
+                <div class="page-layout simple right-sidebar">
+
+                    <div class="page-content-wrapper custom-scrollbar">
+
+                        <!-- HEADER -->
+                        <div class="jumbotron jumbotron-fluid bg-secondary">
+
+                            <div class="container">
+                                <h1 class="display-2">Welcome to Cuneiform!</h1>
+                            </div>
+
+                        </div>
+                        <!-- / HEADER -->
+
+                        <!-- CONTENT -->
+                        <div class="content container">
+                            <div class="row">
+                                <div class="col-9 col-md-3">
+                                    <button type="button" class="btn btn-secondary">
+                                        <i class="mdi mdi-file-document"></i>
+                                        <span>Documentation</span>
+                                    </button>
+                                </div>
+
+                                <div class="col-9 col-md-3"></div>
+
+                                <div class="col-9 col-md-3">
+                                    <button type="button" class="btn btn-secondary">
+                                        <i class="mdi mdi-forum"></i>
+                                        <span>Discussion</span>
+                                    </button>
+                                </div>
+                            </div> <br><br><br><br>
+
+                            <div class="col-9 col-md-4">
+                                <div id="createApp">
+                                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal"
+                                            data-target="#createAppModal">
+                                        <i class="mdi mdi-folder-plus"></i>
+                                        <span>Create New App</span>
+                                    </button>
+
+
+                                </div>
+                            </div> <br>
+
+                            <div class="col-9 col-md-4">
+                                <button type="button" class="btn btn-primary btn-block">
+                                    <i class="mdi mdi-upload"></i>
+                                    <span>Upload Existing App</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- / CONTENT -->
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="createAppModal" class="modal fade" tabindex="-1" role="dialog"
+                 aria-labelledby="createAppModal" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createAppModalLabel">Create New App</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="input-group mb-3">
+                                <input type="text" id="app-name" class="form-control" placeholder="App name"
+                                       aria-label="App name" aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-secondary" type="button" onclick="createButtonPressed()">Create</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+
+</html>

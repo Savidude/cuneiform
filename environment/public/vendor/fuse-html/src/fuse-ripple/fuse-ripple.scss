@@ -1,0 +1,37 @@
+.fuse-ripple-ready {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.fuse-ripple {
+    position: absolute;
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    background: rgba(0, 0, 0, 0.12);
+    pointer-events: none;
+}
+
+.fuse-ripple-input-wrapper .fuse-ripple-input {
+    padding: 0;
+    -webkit-appearance: none;
+    border: none;
+    font-style: inherit;
+    outline: none;
+    background: transparent;
+    color: inherit;
+}
+
+
+.no-ripple .fuse-ripple {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}

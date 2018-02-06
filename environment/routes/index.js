@@ -11,4 +11,11 @@ router.get('/app', function(req, res, next) {
     res.render('app', { title: 'Development Environment - Cuneiform' });
 });
 
+/*
+Get intent settings page
+ */
+router.get('/intent', function(req, res, next) {
+    res.render('intent', { title: 'Intent Settings - Cuneiform' });
+});
+
 module.exports = router;

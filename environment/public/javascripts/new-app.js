@@ -44,6 +44,9 @@ function showIntentEnvironment(intent) {
     intentName.innerHTML = intent.name;
 }
 
+function createNewIntent() {
+    window.location = '/intent';
+}
 
 var animationEnd = (function(el) {
     var animations = {

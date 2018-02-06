@@ -72,10 +72,43 @@ router.post('/new/app', function (req, res) {
 Getting intents
  */
 router.post('/intents', function (req, res) {
+    var intents = getIntents();
+    res.status(200).json(intents);
+});
+
+
+/*
+If the intent does not exist, update the intent. Else, create new intent.
+ */
+router.post('/intent/update', function (req, res) {
+    var intent = req.body;
+    var intentName = intent.name;
+    var systemIntents = getIntents();
+
+    var isUpdatingIntent = false;
+    systemIntents['intents'].forEach(function (systemIntent) {
+        if (systemIntent['name'] === intentName) {
+            isUpdatingIntent = true;
+            systemIntent['initiative'] = intent.initiative;
+            systemIntent['sample_utterances'] = intent.sample_utterances;
+            systemIntent['slots'] = intent.slots;
+        }
+    });
+
+    if (!isUpdatingIntent) {
+        systemIntents['intents'].push(intent);
+    }
+
     var intentsFilePath = getApplicationsDir() + path.sep + "app" + getMaxApp() + path.sep + "intents" + path.sep + "intents.json";
-    var intents = fs.readFileSync(intentsFilePath);
-    var intentsJson = JSON.parse(intents);
-    res.status(200).json(intentsJson);
+    fs.writeFile(intentsFilePath, JSON.stringify(systemIntents, null, 2), "utf-8", function (err) {
+        if (err) {
+            logger.error("Error while updating intents.json file", err);
+            res.status(500).send();
+        } else {
+            logger.info("Intents updated");
+            res.end('{"success" : "App created", "status" : 200}');
+        }
+    })
 });
 
 module.exports = router;
@@ -102,4 +135,11 @@ function getDirectories(path) {
     return fs.readdirSync(path).filter(function (file) {
         return fs.statSync(path+'/'+file).isDirectory();
     });
+}
+
+function getIntents() {
+    var intentsFilePath = getApplicationsDir() + path.sep + "app" + getMaxApp() + path.sep + "intents" + path.sep + "intents.json";
+    var intents = fs.readFileSync(intentsFilePath);
+    var intentsJson = JSON.parse(intents);
+    return intentsJson;
 }

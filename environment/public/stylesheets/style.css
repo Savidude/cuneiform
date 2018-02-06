@@ -45,6 +45,23 @@
     color: #9E9E9E;
 }
 
+.sample-utterance {
+    width: 100%;
+    margin-top: 12px;
+    padding-left: 50px;
+    padding-right: 24px;
+}
+
+.delete-utterance {
+    float: right;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.sample-utterance span {
+    color: #9E9E9E;
+}
+
 #properties {
     -webkit-animation-duration: 0.5s;
 }

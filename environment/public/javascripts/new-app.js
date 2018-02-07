@@ -1,4 +1,5 @@
 var isTryVisible = true;
+var currentIntent;
 
 $( document ).ready(function() {
     $.ajax({
@@ -40,12 +41,17 @@ function addIntentNavs(intents) {
 }
 
 function showIntentEnvironment(intent) {
+    currentIntent = intent.name;
     var intentName = document.getElementById("intent-name");
     intentName.innerHTML = intent.name;
 }
 
 function createNewIntent() {
-    window.location = '/intent';
+    window.location = '/new-intent';
+}
+
+function getIntentProperties() {
+    window.location = '/intent/' + currentIntent;
 }
 
 var animationEnd = (function(el) {

@@ -12,10 +12,18 @@ router.get('/app', function(req, res, next) {
 });
 
 /*
-Get intent settings page
+Get new intent settings page
  */
-router.get('/intent', function(req, res, next) {
+router.get('/new-intent', function(req, res, next) {
     res.render('intent', { title: 'Intent Settings - Cuneiform' });
+});
+
+/*
+Get settings page for intent by name
+ */
+router.get('/intent/:name', function(req, res, next) {
+    var name = req.params.name;
+    res.render('intent-edit', { title: 'Intent Settings - Cuneiform', intent_name: name });
 });
 
 module.exports = router;

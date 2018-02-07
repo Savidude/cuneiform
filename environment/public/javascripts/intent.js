@@ -218,35 +218,39 @@ function utteranceTextKeyPressed(event) {
         var utterance = utteranceText.val();
         utteranceText.val('');
 
-        var sampleUtterancesDiv = document.getElementById("sample-utterances");
-        var utteranceDiv = document.createElement("div");
-        utteranceDiv.classList.add("sample-utterance");
-
-        var spanIcon = document.createElement("span");
-        spanIcon.classList.add("input-group-btn");
-        spanIcon.innerHTML = '<button type="button" class="btn btn-icon">' +
-                                    '<i class="mdi mdi-format-quote-open"></i>' +
-                            '</button>';
-        utteranceDiv.appendChild(spanIcon);
-
-        var utteranceTextSpan = document.createElement('span');
-        utteranceTextSpan.classList.add("h5");
-        utteranceTextSpan.innerHTML = utterance;
-        utteranceDiv.appendChild(utteranceTextSpan);
-
-        var deleteButton = document.createElement("button");
-        deleteButton.setAttribute("type", "button");
-        deleteButton.classList.add("btn");
-        deleteButton.classList.add("btn-icon");
-        deleteButton.classList.add("delete-utterance");
-        deleteButton.innerHTML = '<i class="mdi mdi-close-circle"></i>';
-        deleteButton.onclick = function () {
-            utteranceDiv.remove();
-        };
-        utteranceDiv.appendChild(deleteButton);
-
-        sampleUtterancesDiv.appendChild(utteranceDiv);
+        displayUtterance(utterance);
     }
+}
+
+function displayUtterance(utterance) {
+    var sampleUtterancesDiv = document.getElementById("sample-utterances");
+    var utteranceDiv = document.createElement("div");
+    utteranceDiv.classList.add("sample-utterance");
+
+    var spanIcon = document.createElement("span");
+    spanIcon.classList.add("input-group-btn");
+    spanIcon.innerHTML = '<button type="button" class="btn btn-icon">' +
+        '<i class="mdi mdi-format-quote-open"></i>' +
+        '</button>';
+    utteranceDiv.appendChild(spanIcon);
+
+    var utteranceTextSpan = document.createElement('span');
+    utteranceTextSpan.classList.add("h5");
+    utteranceTextSpan.innerHTML = utterance;
+    utteranceDiv.appendChild(utteranceTextSpan);
+
+    var deleteButton = document.createElement("button");
+    deleteButton.setAttribute("type", "button");
+    deleteButton.classList.add("btn");
+    deleteButton.classList.add("btn-icon");
+    deleteButton.classList.add("delete-utterance");
+    deleteButton.innerHTML = '<i class="mdi mdi-close-circle"></i>';
+    deleteButton.onclick = function () {
+        utteranceDiv.remove();
+    };
+    utteranceDiv.appendChild(deleteButton);
+
+    sampleUtterancesDiv.appendChild(utteranceDiv);
 }
 
 function updateIntent(){

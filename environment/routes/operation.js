@@ -111,6 +111,27 @@ router.post('/intent/update', function (req, res) {
     })
 });
 
+/*
+Searching intents by name
+ */
+router.post('/intent/get', function (req, res) {
+    var intents = getIntents();
+    var intentName = req.body.name;
+    var result;
+
+    intents['intents'].forEach(function (intent) {
+        if (intent.name === intentName) {
+            result = intent;
+        }
+    });
+
+    if (result !== undefined) {
+        res.status(200).json(result);
+    } else {
+        res.status(404).send();
+    }
+});
+
 module.exports = router;
 
 function getApplicationsDir() {

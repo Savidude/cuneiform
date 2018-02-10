@@ -4,7 +4,7 @@ VAR = 'VAR'
 INTEGER_DIV = 'INTEGER_DIV'
 PRIORITY = 'PRIORITY'
 PRECONDITIONS = 'PRECONDITIONS'
-FUNCTION = 'FUNCTION'
+NODE = 'NODE'
 WHILE = 'WHILE'
 ACTION = 'ACTION'
 IF = 'IF'
@@ -74,7 +74,7 @@ RESERVED_KEYWORDS = {
     'div': Token(INTEGER_DIV, 'div'),
     'priority': Token(PRIORITY, 'priority'),
     'preconditions': Token(PRECONDITIONS, 'preconditions'),
-    'function': Token(FUNCTION, 'function'),
+    'node': Token(NODE, 'node'),
     'while': Token(WHILE, 'while'),
     'action': Token(ACTION, 'action'),
     'if': Token(IF, 'if'),

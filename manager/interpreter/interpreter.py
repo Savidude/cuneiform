@@ -188,27 +188,27 @@ class Interpreter(NodeVisitor):
             for assignment in node.variable_assignments.assign:
                 self.visit(assignment)
 
-        function_list = []
+        node_list = []
         max_priority = 0
-        for func in node.functions:
-            if func.name.value == MAIN:
-                function_list = [func]
+        for n in node.nodes:
+            if n.name.value == MAIN:
+                node_list = [n]
                 break
-            container = func.container
+            container = n.container
             preconditions = container.preconditions
             if self.visit(preconditions):
                 priority = container.priority.value
                 if priority > max_priority:
                     max_priority = priority
-                    function_list = [func]
+                    node_list = [n]
                 elif priority == max_priority:
-                    function_list.append(func)
+                    node_list.append(n)
 
-        response_data = self.visit(random.choice(function_list))
+        response_data = self.visit(random.choice(node_list))
         if response_data is not None:
             return response_data
 
-    def visit_Function(self, node):
+    def visit_Node(self, node):
         container = node.container
         priority = container.priority
         preconditions = container.preconditions

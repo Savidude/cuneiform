@@ -122,7 +122,7 @@ class NoOp(AST):
     pass
 
 
-class Function(AST):
+class Node(AST):
     def __init__(self, name, container):
         super().__init__()
         self.name = name
@@ -202,10 +202,10 @@ class VarAssign(AST):
 
 
 class Block(AST):
-    def __init__(self, variable_assignments, functions):
+    def __init__(self, variable_assignments, nodes):
         super().__init__()
         self.variable_assignments = variable_assignments
-        self.functions = functions
+        self.nodes = nodes
 
 
 class Intent(AST):
@@ -251,8 +251,8 @@ class Parser(object):
         """ block : variable_assignments functions """
         assignment_nodes = self.variable_assignments()
         # TODO: Implement functions
-        function_nodes = self.functions()
-        node = Block(assignment_nodes, function_nodes)
+        nodes = self.nodes()
+        node = Block(assignment_nodes, nodes)
         return node
 
     def variable_assignments(self):
@@ -305,25 +305,25 @@ class Parser(object):
         else:
             return self.empty()
 
-    def functions(self):
-        """ functions : (function)+ """
-        func = self.function()
-        functions = [func]
-        while self.current_token.type == lexer.FUNCTION:
-            func = self.function()
-            functions.append(func)
+    def nodes(self):
+        """ nodes : (node)+ """
+        node = self.node()
+        nodes = [node]
+        while self.current_token.type == lexer.NODE:
+            node = self.node()
+            nodes.append(node)
 
-        return functions
+        return nodes
 
-    def function(self):
-        """ function : FUNCTION variable LCB container RCB """
-        self.eat(lexer.FUNCTION)
-        function_name = self.variable()
+    def node(self):
+        """ node : NODE variable LCB container RCB """
+        self.eat(lexer.NODE)
+        name = self.variable()
         self.eat(lexer.LCB)
         container = self.container()
         self.eat(lexer.RCB)
 
-        node = Function(function_name, container)
+        node = Node(name, container)
         return node
 
     def container(self):

@@ -27,8 +27,8 @@ def get_config():
     """ get configuration data from file
     :return: configuration data in JSON format
     """
-    cwd = os.getcwd()
-    config_file_path = cwd + os.path.sep + 'config.json'
+    cwd = os.path.realpath(__file__)
+    config_file_path = cwd.replace('dialog_manager.py', 'config.json')
     with open(config_file_path) as data_file:
         data = json.load(data_file)
         return data
@@ -39,8 +39,8 @@ def get_intents_dir_path():
     :return: intents directory in latest application
     """
     # getting applications directory
-    cwd = os.getcwd()
-    cwd = cwd.replace('manager', '')
+    cwd = os.path.realpath(__file__)
+    cwd = cwd.replace('manager' + os.path.sep + 'dialog_manager.py', '')
     applications_dir = cwd + os.path.join("resources", "deployment", "applications")
     dir_list = os.listdir(applications_dir)
 
@@ -108,7 +108,7 @@ def init_dialog_manager(max_clients, dialog_manager_port):
                 user_message = message_data['message']
 
                 user_intent_slots = USER_SLOTS.get(session_id)
-                if len(slot_data) > 0:
+                if slot_data is not None:
                     if user_intent_slots is None:
                         user_intent_slots = slot_data
                         USER_SLOTS[session_id] = user_intent_slots

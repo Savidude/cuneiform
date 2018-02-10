@@ -4,19 +4,12 @@ from . import parser
 import random
 
 # Importing system operations
-# from response import Response
-# from internal_database import InternalDatabase
-# from file import File
-#
-# from system_string import String
-# from system_array import Array
+from .system import Response
+from .system import InternalDatabase
+from .system import File
 
-from .system import response as Response
-from .system import internal_database as InternalDatabase
-from .system import file as File
-
-from .system import system_string as String
-from .system import system_array as Array
+from .system import String
+from .system import Array
 
 MAIN = 'main'
 

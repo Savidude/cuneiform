@@ -127,7 +127,7 @@
                                 <i class="mdi mdi-settings"></i>
                             </button>
 
-                            <div class="toolbar-separator"></div>
+                            <div class="toolbar-separator separator"></div>
 
                             <button type="button" class="quick-panel-button btn btn-icon" onclick="toggleTry()"
                                     data-toggle="tooltip" data-placement="bottom" title="Try it now!">
@@ -150,143 +150,37 @@
 
                     <aside id="properties" class="aside aside-right animated slideInRight" data-fuse-bar="properties"
                            data-fuse-bar-media-step="md" data-fuse-bar-position="right">
-                        <div class="list-group" class="date">
+                        <div class="view flex-column align-items-center justify-content-center">
+                            <div class="chat-content col">
+                                <div id="message-list" class="chat-messages">
 
-                            <div class="list-group-item subheader">TODAY</div>
-
-                            <div class="list-group-item two-line">
-
-                                <div class="text-muted">
-
-                                    <div class="h1"> Saturday</div>
-
-                                    <div class="h2 row no-gutters align-items-start">
-                                        <span> 1</span>
-                                        <span class="h6">th</span>
-                                        <span> Jan</span>
+                                    <div class="row flex-nowrap message-row contact p-4">
+                                        <div class="bubble">
+                                            <div class="message">Quickly come to the meeting room 1B, we have a big server issue</div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="divider"></div>
+                                    <div class="row flex-nowrap message-row user p-4">
+                                        <div class="bubble">
+                                            <div class="message">I’m having breakfast right now, can’t you wait for 10 minutes?</div>
+                                        </div>
+                                    </div>
 
-                        <div class="list-group">
-
-                            <div class="list-group-item subheader">Events</div>
-
-                            <div class="list-group-item two-line">
-
-                                <div class="list-item-content">
-                                    <h3>Group Meeting</h3>
-                                    <p>In 32 Minutes, Room 1B</p>
                                 </div>
                             </div>
 
-                            <div class="list-group-item two-line">
-
-                                <div class="list-item-content">
-                                    <h3>Public Beta Release</h3>
-                                    <p>11:00 PM</p>
-                                </div>
-                            </div>
-
-                            <div class="list-group-item two-line">
-
-                                <div class="list-item-content">
-                                    <h3>Dinner with David</h3>
-                                    <p>17:30 PM</p>
-                                </div>
-                            </div>
-
-                            <div class="list-group-item two-line">
-
-                                <div class="list-item-content">
-                                    <h3>Q&amp;A Session</h3>
-                                    <p>20:30 PM</p>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="divider"></div>
-
-                        <div class="list-group">
-
-                            <div class="list-group-item subheader">Notes</div>
-
-                            <div class="list-group-item two-line">
-
-                                <div class="list-item-content">
-                                    <h3>Best songs to listen while working</h3>
-                                    <p>Last edit: May 8th, 2015</p>
-                                </div>
-                            </div>
-
-                            <div class="list-group-item two-line">
-
-                                <div class="list-item-content">
-                                    <h3>Useful subreddits</h3>
-                                    <p>Last edit: January 12th, 2015</p>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="divider"></div>
-
-                        <div class="list-group">
-
-                            <div class="list-group-item subheader">Quick Settings</div>
-
-                            <div class="list-group-item">
-
-                                <div class="list-item-content">
-                                    <h3>Notifications</h3>
+                            <div class="chat-footer row align-items-center justify-content-center p-2 pl-4">
+                                <div class="form-group col mr-4">
+                                    <input type="text" class="form-control" id="message-text" placeholder="Type and hit enter to send message">
                                 </div>
 
-                                <div class="secondary-container">
-                                    <label class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" />
-                                        <span class="custom-control-indicator"></span>
-                                    </label>
-                                </div>
-
-                            </div>
-
-                            <div class="list-group-item">
-
-                                <div class="list-item-content">
-                                    <h3>Cloud Sync</h3>
-                                </div>
-
-                                <div class="secondary-container">
-                                    <label class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" />
-                                        <span class="custom-control-indicator"></span>
-                                    </label>
-                                </div>
-
-                            </div>
-
-                            <div class="list-group-item">
-
-                                <div class="list-item-content">
-                                    <h3>Retro Thrusters</h3>
-                                </div>
-
-                                <div class="secondary-container">
-
-                                    <label class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" />
-                                        <span class="custom-control-indicator"></span>
-                                    </label>
-                                </div>
+                                <button type="button" class="btn btn-fab btn-secondary btn-sm" aria-label="Send message"
+                                    onclick="sendMessage()">
+                                    <i class="mdi mdi-send"></i>
+                                </button>
                             </div>
                         </div>
                     </aside>
-                </div>
-            </div>
 
             <div id="createAppModal" class="modal fade" tabindex="-1" role="dialog"
                  aria-labelledby="createAppModal" aria-hidden="true">

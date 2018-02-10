@@ -3,6 +3,8 @@ var router = express.Router();
 var fs = require('fs-extra');
 var path = require('path');
 
+var spawn = require('child_process').spawn;
+
 //Instantiating logger
 var winston = require('winston');
 var logger = new (winston.Logger)({
@@ -132,6 +134,36 @@ router.post('/intent/get', function (req, res) {
     }
 });
 
+/*
+Communication interface with the responder
+ */
+router.post('/responder', function (req, res) {
+    var input_data = {};
+    input_data['sessionid'] = req.body.sessionid;
+    input_data['message'] = req.body.message;
+
+    var py = spawn("python3", [getResponder()]);
+    var responseData;
+    py.stdout.on("data", function (data) {
+        responseData = JSON.parse(data.toString());
+        /*
+        Expected format of responseData
+            responseData = {"sessionid": sessionId, "response": "Sample Response"}
+         */
+
+    });
+    py.stdout.on("end", function () {
+        if (responseData !== undefined) {
+            res.status(200).json(responseData);
+        } else {
+            res.status(500).send();
+        }
+    });
+
+    py.stdin.write(JSON.stringify(input_data));
+    py.stdin.end();
+});
+
 module.exports = router;
 
 function getApplicationsDir() {
@@ -163,4 +195,9 @@ function getIntents() {
     var intents = fs.readFileSync(intentsFilePath);
     var intentsJson = JSON.parse(intents);
     return intentsJson;
+}
+
+function getResponder() {
+    return __dirname.replace("environment" + path.sep + "routes",
+        "responder" + path.sep + "responder.py");
 }

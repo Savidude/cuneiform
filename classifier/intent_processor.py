@@ -15,8 +15,8 @@ def get_intents_dir_path():
     :return: intents directory in latest application
     """
     # getting applications directory
-    cwd = os.getcwd()
-    cwd = cwd.replace('classifier', '')
+    cwd = os.path.realpath(__file__)
+    cwd = cwd.replace('classifier' + os.path.sep + 'intent_processor.py', '')
     applications_dir = cwd + os.path.sep + os.path.join("resources", "deployment", "applications")
     dir_list = os.listdir(applications_dir)
 

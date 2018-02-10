@@ -18,8 +18,8 @@ def get_config():
     """ get configuration data from file
     :return: configuration data in JSON format
     """
-    cwd = os.getcwd()
-    config_file_path = cwd + os.path.sep + 'config.json'
+    cwd = os.path.realpath(__file__)
+    config_file_path = cwd.replace('responder.py', 'config.json')
     with open(config_file_path) as data_file:
         data = json.load(data_file)
         return data
@@ -30,8 +30,8 @@ def create_connection():
     :return: Connection object or None
     """
     # Getting the database file
-    cwd = os.getcwd()
-    cwd = cwd.replace('responder', '')
+    cwd = os.path.realpath(__file__)
+    cwd = cwd.replace('responder' + os.path.sep + 'responder.py', '')
     system_db_file = cwd + os.path.sep + os.path.join('resources', 'knowledge', 'db') + os.path.sep + 'system.db'
     try:
         conn = sqlite3.connect(system_db_file)
@@ -99,12 +99,14 @@ def get_session(conn, sessionid):
         logging.error("Error while fetching sessions from database: " + str(e))
 
 
-def main(argsv):
-    sessionid = argsv[0]
-    message = argsv[1]
+def main():
+    # sessionid = argsv[0]
+    # message = argsv[1]
 
-    # sessionid = "456"
-    # message = "how do i play a game of chess"
+    input_data = sys.stdin.readlines()
+    input = json.loads(input_data[0])
+    sessionid = input['sessionid']
+    message = input['message']
 
     config = get_config()
     conn = create_connection()
@@ -129,9 +131,11 @@ def main(argsv):
             response_text = message_data['response_text']
             client_socket.close()
 
-            print('session ID: ' + sessionid)
-            print('response text: ' + str(response_text))
+            message_data = {}
+            message_data['sessionid'] = sessionid
+            message_data['response'] = str(response_text)
+            print(json.dumps(message_data))
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

@@ -25,8 +25,8 @@ def get_config():
     """ get configuration data from file
     :return: configuration data in JSON format
     """
-    cwd = os.getcwd()
-    config_file_path = cwd + os.path.sep + 'config.json'
+    cwd = os.path.realpath(__file__)
+    config_file_path = cwd.replace('classifier.py', 'config.json')
     with open(config_file_path) as data_file:
         data = json.load(data_file)
         return data
@@ -37,8 +37,8 @@ def get_intents_dir_path():
     :return: intents directory in latest application
     """
     # getting applications directory
-    cwd = os.getcwd()
-    cwd = cwd.replace('classifier', '')
+    cwd = os.path.realpath(__file__)
+    cwd = cwd.replace('classifier' + os.path.sep + 'classifier.py', '')
     applications_dir = cwd + os.path.sep + os.path.join("resources", "deployment", "applications")
     dir_list = os.listdir(applications_dir)
 
@@ -62,8 +62,8 @@ def create_connection():
     :return: Connection object or None
     """
     # Getting the database file
-    cwd = os.getcwd()
-    cwd = cwd.replace('classifier', '')
+    cwd = os.path.realpath(__file__)
+    cwd = cwd.replace('classifier' + os.path.sep + 'classifier.py', '')
     system_db_file = cwd + os.path.sep + os.path.join('resources', 'knowledge', 'db') + os.path.sep + 'system.db'
     try:
         conn = sqlite3.connect(system_db_file)

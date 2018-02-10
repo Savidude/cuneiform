@@ -1,5 +1,10 @@
+const USER = "user";
+const SYSTEM = "system";
+const NONE = "None";
+
 var isTryVisible = true;
 var currentIntent;
+var sessionId = "123";
 
 $( document ).ready(function() {
     $.ajax({
@@ -8,7 +13,6 @@ $( document ).ready(function() {
         dataType: "json",
         url: "/operation/intents",
         success: function (result) {
-            // console.log(JSON.stringify(result, null, 2));
             addIntentNavs(result);
             showIntentEnvironment(result.intents[0]);
         },
@@ -18,7 +22,69 @@ $( document ).ready(function() {
             }
         }
     });
+
+    $("#message-text").keypress(function (event) {
+        if (event.which == 13) { //Enter key is pressed
+            sendMessage();
+        }
+    });
 });
+
+function sendMessage() {
+    var messageText = document.getElementById("message-text");
+    var message = messageText.value;
+    messageText.value = "";
+
+    var messageData = {};
+    messageData['sessionid'] = sessionId;
+    messageData['message'] = message;
+    generateMessage(USER, message);
+
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json',
+        dataType: "json",
+        url: "/operation/responder",
+        data: JSON.stringify(messageData),
+        success: function (result) {
+            sessionId = result['sessionid'];
+            var response = result['response'];
+            if (response !== NONE) {
+                generateMessage(SYSTEM, response);
+            }
+        },
+        error: function (error) {
+            if (error.status === 500) {
+                //TODO: Display error
+            }
+        }
+    });
+}
+
+function generateMessage(actor, message) {
+    var containerDiv = document.createElement("div");
+    containerDiv.classList.add("row");
+    containerDiv.classList.add("flex-nowrap");
+    containerDiv.classList.add("message-row");
+    containerDiv.classList.add("p-4");
+    if (actor === USER) {
+        containerDiv.classList.add("user");
+    } else if (actor === SYSTEM) {
+        containerDiv.classList.add("system");
+    }
+
+    var bubbleDiv = document.createElement("div");
+    bubbleDiv.classList.add("bubble");
+    containerDiv.appendChild(bubbleDiv);
+
+    var messageDiv = document.createElement("div");
+    messageDiv.classList.add("message");
+    messageDiv.innerHTML = message;
+    bubbleDiv.appendChild(messageDiv);
+
+    var messageList = document.getElementById("message-list");
+    messageList.appendChild(containerDiv);
+}
 
 function addIntentNavs(intents) {
     var intentArray = intents.intents;

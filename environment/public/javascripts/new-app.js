@@ -2,7 +2,9 @@ const USER = "user";
 const SYSTEM = "system";
 const NONE = "None";
 
-var isTryVisible = true;
+var isTryVisible = false;
+var isCodeVisible = true;
+
 var currentIntent;
 var sessionId = "123";
 
@@ -27,6 +29,15 @@ $( document ).ready(function() {
         if (event.which == 13) { //Enter key is pressed
             sendMessage();
         }
+    });
+
+    $("#properties").hide();
+
+    $("#var-name").keypress(function (event) {
+        variableKeyPressed(event)
+    });
+    $("#var-value-text").keypress(function (event) {
+        variableKeyPressed(event)
     });
 });
 
@@ -142,10 +153,155 @@ function toggleTry() {
             $(this).hide()
         });
     } else {
-        $('#properties').show();
-        $('#properties').addClass('animated slideInRight').one(animationEnd, function () {
-            $(this).removeClass('animated slideInRight');
-        });
+        if (isCodeVisible) {
+            $('#code').addClass('animated slideOutRight').one(animationEnd, function () {
+                $(this).removeClass('animated slideOutRight');
+                $(this).hide()
+
+                $('#properties').show();
+                $('#properties').addClass('animated slideInRight').one(animationEnd, function () {
+                    $(this).removeClass('animated slideInRight');
+                });
+            });
+            isCodeVisible = false;
+        } else {
+            $('#properties').show();
+            $('#properties').addClass('animated slideInRight').one(animationEnd, function () {
+                $(this).removeClass('animated slideInRight');
+            });
+        }
     }
-    isTryVisible = !isTryVisible
+    isTryVisible = !isTryVisible;
+}
+
+function toggleIntentCode() {
+    if (isCodeVisible) {
+        $('#code').addClass('animated slideOutRight').one(animationEnd, function () {
+            $(this).removeClass('animated slideOutRight');
+            $(this).hide()
+        });
+    } else {
+        if (isTryVisible) {
+            $('#properties').addClass('animated slideOutRight').one(animationEnd, function () {
+                $(this).removeClass('animated slideOutRight');
+                $(this).hide();
+
+                $('#code').show();
+                $('#code').addClass('animated slideInRight').one(animationEnd, function () {
+                    $(this).removeClass('animated slideInRight');
+                });
+            });
+            isTryVisible = false;
+        } else {
+            $('#code').show();
+            $('#code').addClass('animated slideInRight').one(animationEnd, function () {
+                $(this).removeClass('animated slideInRight');
+            });
+        }
+
+    }
+    isCodeVisible = !isCodeVisible;
+}
+
+function toggleVarType() {
+    var text = document.getElementById("var-value-text");
+    var select = document.getElementById("var-value-select");
+
+    if (text.style.display === "none") {
+        text.style.display = "block";
+    } else {
+        text.style.display = "none";
+    }
+
+    if (select.style.display === "none") {
+        select.style.display = "block";
+    } else {
+        select.style.display = "none";
+    }
+}
+
+function variableKeyPressed(event) {
+    if (event.which === 13) { //Enter key is pressed
+        var varName = $("#var-name");
+        var name = varName.val();
+        varName.val("");
+
+        var varValueText = $("#var-value-text");
+        var value = varValueText.val();
+        varValueText.val("");
+
+        var row = document.createElement("tr");
+
+        var nameData = document.createElement("td");
+        nameData.innerHTML = name;
+        row.appendChild(nameData);
+
+        var valueData = document.createElement("td");
+        valueData.innerHTML = value;
+        row.appendChild(valueData);
+
+        var buttonData = document.createElement("td");
+        var deleteButton = document.createElement("button");
+        deleteButton.classList.add("btn");
+        deleteButton.classList.add("btn-icon");
+        deleteButton.innerHTML = '<i class="mdi mdi-close-circle"></i>';
+        deleteButton.onclick = function () {
+            row.remove()
+        };
+        buttonData.appendChild(deleteButton);
+        row.appendChild(buttonData);
+
+        document.getElementById("variables-table").append(row);
+        varName.focus();
+    }
+}
+
+function saveIntentCode() {
+    var intentName = currentIntent;
+    var globalVariables = getGlobalVariables();
+
+    var intent = {};
+    intent['name'] = intentName;
+    intent['global_variables'] = globalVariables;
+
+    var l = Ladda.create(document.querySelector("#save-btn"));
+    l.start();
+
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json',
+        dataType: "json",
+        url: "/operation/intent/save",
+        data: JSON.stringify(intent),
+        success: function (result) {
+            l.stop();
+        },
+        error: function (error) {
+            if (error.status === 500) {
+                //TODO: Display error
+            }
+        }
+    });
+    
+    function getGlobalVariables() {
+        var variablesTable = document.getElementById("variables-table");
+        var rows = variablesTable.childNodes;
+        var globalVariables = [];
+        for (var i = 3; i < rows.length; i++) {
+            var varData = rows[i].childNodes;
+            var name = varData[0].innerHTML;
+            var value = varData[1].innerHTML;
+            if (value === "") {
+                value = null;
+            } else if (!isNaN(Number(value))) {
+                value = Number(value);
+            }
+
+            var variable = {};
+            variable['name'] = name;
+            variable['value'] = value;
+            globalVariables.push(variable);
+        }
+        return globalVariables;
+    }
 }

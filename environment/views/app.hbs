@@ -24,6 +24,8 @@
     <link type="text/css" rel="stylesheet" href="vendor/fuse-html/fuse-html.min.css" />
     <!--Animate CSS-->
     <link type="text/css" rel="stylesheet" href="bower_components/animate.css/animate.min.css" />
+    <!--Ladda CSS-->
+    <link type="text/css" rel="stylesheet" href="bower_components/ladda/dist/ladda.min.css" />
     <!-- Main CSS -->
     <link type="text/css" rel="stylesheet" href="stylesheets/main.css">
     <!--Style CSS-->
@@ -35,6 +37,9 @@
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!--Ladda JS-->
+    <script type="text/javascript" src="bower_components/ladda/dist/spin.min.js"></script>
+    <script type="text/javascript" src="bower_components/ladda/dist/ladda.min.js"></script>
     <!-- Fuse Html -->
     <script type="text/javascript" src="vendor/fuse-html/fuse-html.min.js"></script>
     <!--New App JS-->
@@ -122,6 +127,20 @@
 
                     <div class="col-auto">
                         <div class="row no-gutters align-items-center justify-content-end">
+                            <button type="button" id="save-btn" class="quick-panel-button btn btn-icon"
+                                    data-style="contract-overlay" onclick="saveIntentCode()" title="Intent code">
+                                <i class="mdi mdi-content-save"></i>
+                            </button>
+
+                            <div class="toolbar-separator separator"></div>
+
+                            <button type="button" class="quick-panel-button btn btn-icon" onclick="toggleIntentCode()"
+                                    title="Intent code">
+                                <i class="mdi mdi-code-tags"></i>
+                            </button>
+
+                            <div class="toolbar-separator separator"></div>
+
                             <button type="button" class="quick-panel-button btn btn-icon" onclick="getIntentProperties()"
                                     title="Intent properties">
                                 <i class="mdi mdi-settings"></i>
@@ -148,24 +167,12 @@
                         <!-- / CONTENT -->
                     </div>
 
-                    <aside id="properties" class="aside aside-right animated slideInRight" data-fuse-bar="properties"
+                    <aside id="properties" class="aside aside-right" data-fuse-bar="properties"
                            data-fuse-bar-media-step="md" data-fuse-bar-position="right">
+                        <h1 class="display-4 chat-header">Try it now...</h1>
                         <div class="view flex-column align-items-center justify-content-center">
                             <div class="chat-content col">
                                 <div id="message-list" class="chat-messages">
-
-                                    <div class="row flex-nowrap message-row contact p-4">
-                                        <div class="bubble">
-                                            <div class="message">Quickly come to the meeting room 1B, we have a big server issue</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row flex-nowrap message-row user p-4">
-                                        <div class="bubble">
-                                            <div class="message">I’m having breakfast right now, can’t you wait for 10 minutes?</div>
-                                        </div>
-                                    </div>
-
                                 </div>
                             </div>
 
@@ -182,34 +189,92 @@
                         </div>
                     </aside>
 
-            <div id="createAppModal" class="modal fade" tabindex="-1" role="dialog"
-                 aria-labelledby="createAppModal" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="createAppModalLabel">Create New App</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                    <aside id="code" class="aside aside-right animated slideInRight" data-fuse-bar="properties"
+                           data-fuse-bar-media-step="md" data-fuse-bar-position="right">
+                        <div class="code-info">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#variables" role="tab" aria-controls="home" aria-expanded="true">Variables</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#nodes" role="tab" aria-controls="profile">Nodes</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link" data-toggle="tab" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                        Functions
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="variables" role="tabpanel">
+                                    <p class="h4">Global Variables</p> <br>
+                                    <p class="h6">Create new variable</p>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <input type="text" id="var-name" class="form-control" placeholder="name">
+                                            </td>
+                                            <td id="var-type-data">
+                                                <input type="text" id="var-value-text" class="form-control" placeholder="value">
+                                                <select class="form-control form-control-sm" id="var-value-select"
+                                                    style="display: none">
+                                                    <option value="Response">Response</option>
+                                                    <option value="InternalDatabase">Internal Database</option>
+                                                    <option value="File">File</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="quick-panel-button btn btn-icon" onclick="toggleVarType()"
+                                                        title="Toggle variable type">
+                                                    <i class="mdi mdi-toggle-switch"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table id="variables-table">
+                                        <thead>
+                                            <td>Variable name</td>
+                                            <td>Value</td>
+                                        </thead>
+                                    </table>
+                                </div>
+
+                                <div class="tab-pane fade" id="nodes" role="tabpanel">
+                                    <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko
+                                        farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic
+                                        magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY
+                                        ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="modal-body">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="App name"
-                                       aria-label="App name" aria-describedby="basic-addon2">
-                                <div class="input-group-append">
-                                    <button class="btn btn-secondary" type="button">Create</button>
+                    </aside>
+
+                    <div id="createAppModal" class="modal fade" tabindex="-1" role="dialog"
+                         aria-labelledby="createAppModal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="createAppModalLabel">Create New App</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" placeholder="App name"
+                                               aria-label="App name" aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-secondary" type="button">Create</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="quick-panel-sidebar custom-scrollbar" fuse-cloak data-fuse-bar="quick-panel-sidebar" data-fuse-bar-position="right">
-
             </div>
         </div>
     </div>
+</div>
 </main>
 </body>
 

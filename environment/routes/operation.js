@@ -164,6 +164,29 @@ router.post('/responder', function (req, res) {
     py.stdin.end();
 });
 
+/*
+Getting intent data from the UI and converting into cuneiform file
+ */
+router.post('/intent/save', function (req, res) {
+    var intentData = req.body;
+    var name = intentData.name;
+    var globalVariables = intentData.global_variables;
+    var code = generateCuneiformCode(name, globalVariables);
+
+    var intentsDirPath = getApplicationsDir() + path.sep + "app" + getMaxApp() + path.sep + "intents";
+    var cuneiformFilePath = intentsDirPath + path.sep + name + ".cu";
+    fs.writeFile(cuneiformFilePath, code, "utf-8", function (err) {
+        if (err) {
+            logger.error("Error while updating cuneiform file", err);
+            res.status(500).send();
+        } else {
+            logger.info("Cuneiform file updated");
+            res.set('Content-Type', 'application/json');
+            res.end('{"success" : "File updated", "status" : 200}');
+        }
+    })
+});
+
 module.exports = router;
 
 function getApplicationsDir() {
@@ -200,4 +223,30 @@ function getIntents() {
 function getResponder() {
     return __dirname.replace("environment" + path.sep + "routes",
         "responder" + path.sep + "responder.py");
+}
+
+function generateCuneiformCode(intentName, globalVariables) {
+    var code = intentName + ' {\n';
+    code += generateGlobalVariableCode();
+    code += '}';
+    return code;
+
+    function generateGlobalVariableCode() {
+        var globalVariableCode = '';
+        globalVariables.forEach(function (variable) {
+            var name = variable.name;
+            var value = variable.value;
+            globalVariableCode += '\tvar ' + name;
+            if (value === null) {
+                globalVariableCode += ';\n';
+            } else {
+                if (isNaN(value)) {
+                    globalVariableCode += ' = "' + value + '";\n';
+                } else {
+                    globalVariableCode += ' = ' + value + ';\n'
+                }
+            }
+        });
+        return globalVariableCode;
+    }
 }

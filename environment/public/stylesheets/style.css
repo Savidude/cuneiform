@@ -70,6 +70,10 @@
     -webkit-animation-duration: 0.5s;
 }
 
+#intent-name {
+    color: #757575;
+}
+
 #slot-data td{
     padding-left: 24px;
     padding-right: 24px;
@@ -77,10 +81,20 @@
     padding-bottom: 6px;
 }
 
+.chat-header {
+    color: #9E9E9E;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
 .chat-content {
     overflow: auto;
     max-height:85%;
     max-height:85vh;
+}
+
+.chat-messages {
+    width: 300px;
 }
 
 .bubble{
@@ -135,4 +149,30 @@
     position: absolute;
     bottom: 0;
     width: 350px;
+}
+
+#code {
+    -webkit-animation-duration: 0.5s;
+}
+
+.code-info {
+    width: 320px;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.tab-content {
+    margin-top: 12px;
+}
+
+.tab-content p {
+    color: #9E9E9E;
+}
+
+#variables-table {
+    width: 100%;
+    margin-top: 12px;
+}
+#variables-table thead {
+    color: #757575;
 }

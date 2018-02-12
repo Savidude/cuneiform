@@ -187,6 +187,31 @@ router.post('/intent/save', function (req, res) {
     })
 });
 
+/*
+Getting intent code data
+ */
+router.post('/intent/code', function (req, res) {
+    var name = req.body.name;
+    var input_data = {};
+    input_data['name'] = name;
+
+    var py = spawn("python3", [getIntentAST()]);
+    var intent_data;
+    py.stdout.on("data", function (data) {
+        intent_data = JSON.parse(data.toString());
+    });
+    py.stdout.on("end", function () {
+        if (intent_data !== undefined) {
+            res.status(200).json(intent_data);
+        } else {
+            res.status(500).send();
+        }
+    });
+
+    py.stdin.write(JSON.stringify(input_data));
+    py.stdin.end();
+});
+
 module.exports = router;
 
 function getApplicationsDir() {
@@ -223,6 +248,11 @@ function getIntents() {
 function getResponder() {
     return __dirname.replace("environment" + path.sep + "routes",
         "responder" + path.sep + "responder.py");
+}
+
+function getIntentAST() {
+    return __dirname.replace("environment" + path.sep + "routes",
+        "manager" + path.sep + "ast.py");
 }
 
 function generateCuneiformCode(intentName, globalVariables) {

@@ -5,14 +5,6 @@ import os
 from collections import OrderedDict
 import logging
 
-# from lexer import Lexer
-# from parser import Parser
-# from interpreter import Interpreter
-
-# import interpreter.Lexer as Lexer
-# import interpreter.Parser as Parser
-# import interpreter.Interpreter as Interpreter
-
 from interpreter import Lexer as Lexer
 from interpreter import Parser as Parser
 from interpreter import Interpreter as Interpreter

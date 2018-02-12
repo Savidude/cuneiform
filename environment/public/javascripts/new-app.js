@@ -121,6 +121,34 @@ function showIntentEnvironment(intent) {
     currentIntent = intent.name;
     var intentName = document.getElementById("intent-name");
     intentName.innerHTML = intent.name;
+
+    var intentData = {};
+    intentData['name'] = intent.name;
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json',
+        dataType: "json",
+        url: "/operation/intent/code",
+        data: JSON.stringify(intentData),
+        success: function (result) {
+            var globalVariables = result.global_variables;
+            globalVariables.forEach(function (variable) {
+                var name = variable.name;
+                var value;
+                if (variable.value === null) {
+                    value = "";
+                } else {
+                    value = variable.value;
+                }
+                showVariable(name, value);
+            });
+        },
+        error: function (error) {
+            if (error.status === 500) {
+                //TODO: Display error
+            }
+        }
+    });
 }
 
 function createNewIntent() {
@@ -230,30 +258,34 @@ function variableKeyPressed(event) {
         var value = varValueText.val();
         varValueText.val("");
 
-        var row = document.createElement("tr");
-
-        var nameData = document.createElement("td");
-        nameData.innerHTML = name;
-        row.appendChild(nameData);
-
-        var valueData = document.createElement("td");
-        valueData.innerHTML = value;
-        row.appendChild(valueData);
-
-        var buttonData = document.createElement("td");
-        var deleteButton = document.createElement("button");
-        deleteButton.classList.add("btn");
-        deleteButton.classList.add("btn-icon");
-        deleteButton.innerHTML = '<i class="mdi mdi-close-circle"></i>';
-        deleteButton.onclick = function () {
-            row.remove()
-        };
-        buttonData.appendChild(deleteButton);
-        row.appendChild(buttonData);
-
-        document.getElementById("variables-table").append(row);
+        showVariable(name, value);
         varName.focus();
     }
+}
+
+function showVariable(name, value) {
+    var row = document.createElement("tr");
+
+    var nameData = document.createElement("td");
+    nameData.innerHTML = name;
+    row.appendChild(nameData);
+
+    var valueData = document.createElement("td");
+    valueData.innerHTML = value;
+    row.appendChild(valueData);
+
+    var buttonData = document.createElement("td");
+    var deleteButton = document.createElement("button");
+    deleteButton.classList.add("btn");
+    deleteButton.classList.add("btn-icon");
+    deleteButton.innerHTML = '<i class="mdi mdi-close-circle"></i>';
+    deleteButton.onclick = function () {
+        row.remove()
+    };
+    buttonData.appendChild(deleteButton);
+    row.appendChild(buttonData);
+
+    document.getElementById("variables-table").append(row);
 }
 
 function saveIntentCode() {

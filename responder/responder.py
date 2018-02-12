@@ -100,9 +100,6 @@ def get_session(conn, sessionid):
 
 
 def main():
-    # sessionid = argsv[0]
-    # message = argsv[1]
-
     input_data = sys.stdin.readlines()
     input = json.loads(input_data[0])
     sessionid = input['sessionid']

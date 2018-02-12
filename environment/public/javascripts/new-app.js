@@ -8,6 +8,12 @@ var isCodeVisible = true;
 var currentIntent;
 var sessionId = "123";
 
+var intentCodeEditor;
+var newNodeEditor;
+var nodeCodeEditor;
+
+var nodes = [];
+
 $( document ).ready(function() {
     $.ajax({
         type: "POST",
@@ -38,6 +44,25 @@ $( document ).ready(function() {
     });
     $("#var-value-text").keypress(function (event) {
         variableKeyPressed(event)
+    });
+
+    newNodeEditor = CodeMirror(document.getElementById("new-node-code-editor"), {
+        mode: "javascript",
+        theme: "elegant",
+        lineNumbers: true
+    });
+    newNodeEditor.refresh();
+
+    intentCodeEditor = CodeMirror(document.getElementById("intent-code-editor"), {
+        mode: "javascript",
+        theme: "elegant",
+        lineNumbers: true
+    });
+
+    nodeCodeEditor = CodeMirror(document.getElementById("node-code-editor"), {
+        mode: "javascript",
+        theme: "elegant",
+        lineNumbers: true
     });
 });
 
@@ -259,6 +284,7 @@ function variableKeyPressed(event) {
         varValueText.val("");
 
         showVariable(name, value);
+        updateIntentCode();
         varName.focus();
     }
 }
@@ -288,33 +314,13 @@ function showVariable(name, value) {
     document.getElementById("variables-table").append(row);
 }
 
-function saveIntentCode() {
+function updateIntentCode() {
     var intentName = currentIntent;
     var globalVariables = getGlobalVariables();
 
-    var intent = {};
-    intent['name'] = intentName;
-    intent['global_variables'] = globalVariables;
+    var code = generateCuneiformCode();
+    intentCodeEditor.getDoc().setValue(code);
 
-    var l = Ladda.create(document.querySelector("#save-btn"));
-    l.start();
-
-    $.ajax({
-        type: "POST",
-        contentType: 'application/json',
-        dataType: "json",
-        url: "/operation/intent/save",
-        data: JSON.stringify(intent),
-        success: function (result) {
-            l.stop();
-        },
-        error: function (error) {
-            if (error.status === 500) {
-                //TODO: Display error
-            }
-        }
-    });
-    
     function getGlobalVariables() {
         var variablesTable = document.getElementById("variables-table");
         var rows = variablesTable.childNodes;
@@ -336,4 +342,163 @@ function saveIntentCode() {
         }
         return globalVariables;
     }
+
+    function generateCuneiformCode() {
+        var code = intentName + ' {\n';
+        code += generateGlobalVariableCode();
+        code += '\n';
+        code += genereateNodeCode();
+        code += '}';
+        return code;
+
+        function generateGlobalVariableCode() {
+            var globalVariableCode = '';
+            globalVariables.forEach(function (variable) {
+                var name = variable.name;
+                var value = variable.value;
+                globalVariableCode += '\tvar ' + name;
+                if (value === null) {
+                    globalVariableCode += ';\n';
+                } else {
+                    if (isNaN(value)) {
+                        globalVariableCode += ' = "' + value + '";\n';
+                    } else {
+                        globalVariableCode += ' = ' + value + ';\n'
+                    }
+                }
+            });
+            return globalVariableCode;
+        }
+
+        function genereateNodeCode() {
+            var nodesCode = '';
+            nodes.forEach(function (node) {
+                var nodeCode = '';
+                var name = node.name;
+                nodeCode += '\tnode ' + name + ' {\n';
+
+                var priority = node.priority;
+                nodeCode += '\t\tpriority : ' + priority + ';\n\n';
+
+                var preconditions = node.preconditions;
+                nodeCode += '\t\tpreconditions {\n';
+                nodeCode += '\t\t\t' + preconditions + '\n';
+                nodeCode += '\t\t}\n';
+
+                var actionCode = node.action_code;
+                nodeCode += '\t\taction {\n';
+                nodeCode += '\t\t\t' + actionCode + '\n';
+                nodeCode += '\t\t}\n';
+
+                nodeCode += '\t}\n';
+
+                nodesCode += nodeCode;
+            });
+            return nodesCode;
+        }
+    }
+}
+
+function saveIntentCode() {
+    var intentCode = intentCodeEditor.getValue();
+
+    var l = Ladda.create(document.querySelector("#save-btn"));
+    l.start();
+
+    $.ajax({
+        type: "POST",
+        contentType: 'text/plain',
+        dataType: "json",
+        url: "/operation/intent/" + currentIntent + "/save",
+        data: intentCode,
+        success: function (result) {
+            l.stop();
+        },
+        error: function (error) {
+            if (error.status === 500) {
+                //TODO: Display error
+            }
+        }
+    });
+}
+
+function clearNodeEditor() {
+    newNodeEditor.getDoc().setValue("");
+    nodeCodeEditor.getDoc().setValue("");
+}
+
+function createNode() {
+    var nameText = document.getElementById("name-text");
+    var name = nameText.value;
+    nameText.value = "";
+
+    var priorityNum = document.getElementById("priority-input");
+    var priority = priorityNum.value;
+    priorityNum.value = 5;
+
+    var preconditionsText = document.getElementById("preconditions-text");
+    var preconditions = preconditionsText.value;
+    preconditionsText.value = "";
+
+    var actionCode = newNodeEditor.getValue();
+    newNodeEditor.getDoc().setValue("");
+
+    var node = {};
+    node['name'] = name;
+    node['priority'] = priority;
+    node['preconditions'] = preconditions;
+    node['action_code'] = actionCode;
+    nodes.push(node);
+
+    showNodes();
+    updateIntentCode();
+}
+
+function showNodes() {
+    nodes.forEach(function (node) {
+        var card = document.createElement("div");
+        card.classList.add("card");
+
+        var cardBody = document.createElement("div");
+        cardBody.classList.add("card-body");
+        card.appendChild(cardBody);
+
+        var nodeName = document.createElement("h4");
+        nodeName.classList.add("card-title");
+        nodeName.innerHTML = node.name;
+        cardBody.appendChild(nodeName);
+
+        var nodePriority = document.createElement("h6");
+        nodePriority.classList.add("card-subtitle");
+        nodePriority.classList.add("mb-2");
+        nodePriority.classList.add("text-muted");
+        nodePriority.innerHTML = "Priority: " + node.priority;
+        cardBody.appendChild(nodePriority);
+
+        var nodePreconditions = document.createElement("p");
+        nodePreconditions.classList.add("card-text");
+        nodePreconditions.innerHTML = "Preconditions:<br>" + node.preconditions;
+        cardBody.appendChild(nodePreconditions);
+
+        var nodeActionButton = document.createElement("button");
+        nodeActionButton.setAttribute("type", "button");
+        nodeActionButton.classList.add("btn");
+        nodeActionButton.classList.add("btn-outline-secondary");
+        nodeActionButton.classList.add("btn-lg");
+        nodeActionButton.classList.add("btn-block");
+        nodeActionButton.innerHTML = '<i class="mdi mdi-code-braces"></i>' +
+                                    '<span>Action Code</span>';
+        nodeActionButton.onclick = function () {
+            $('#node-action-modal').modal('show');
+            nodeCodeEditor.getDoc().setValue(node.action_code);
+
+            document.getElementById("update-btn").onclick = function () {
+                node['action_code'] = nodeCodeEditor.getValue();
+            };
+        };
+        cardBody.appendChild(nodeActionButton);
+        
+        var nodesList = document.getElementById("nodes-list");
+        nodesList.appendChild(card);
+    });
 }

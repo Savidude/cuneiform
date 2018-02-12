@@ -167,11 +167,9 @@ router.post('/responder', function (req, res) {
 /*
 Getting intent data from the UI and converting into cuneiform file
  */
-router.post('/intent/save', function (req, res) {
-    var intentData = req.body;
-    var name = intentData.name;
-    var globalVariables = intentData.global_variables;
-    var code = generateCuneiformCode(name, globalVariables);
+router.post('/intent/:name/save', function (req, res) {
+    var name = req.params.name;
+    var code = req.body;
 
     var intentsDirPath = getApplicationsDir() + path.sep + "app" + getMaxApp() + path.sep + "intents";
     var cuneiformFilePath = intentsDirPath + path.sep + name + ".cu";
@@ -255,28 +253,28 @@ function getIntentAST() {
         "manager" + path.sep + "ast.py");
 }
 
-function generateCuneiformCode(intentName, globalVariables) {
-    var code = intentName + ' {\n';
-    code += generateGlobalVariableCode();
-    code += '}';
-    return code;
-
-    function generateGlobalVariableCode() {
-        var globalVariableCode = '';
-        globalVariables.forEach(function (variable) {
-            var name = variable.name;
-            var value = variable.value;
-            globalVariableCode += '\tvar ' + name;
-            if (value === null) {
-                globalVariableCode += ';\n';
-            } else {
-                if (isNaN(value)) {
-                    globalVariableCode += ' = "' + value + '";\n';
-                } else {
-                    globalVariableCode += ' = ' + value + ';\n'
-                }
-            }
-        });
-        return globalVariableCode;
-    }
-}
+// function generateCuneiformCode(intentName, globalVariables) {
+//     var code = intentName + ' {\n';
+//     code += generateGlobalVariableCode();
+//     code += '}';
+//     return code;
+//
+//     function generateGlobalVariableCode() {
+//         var globalVariableCode = '';
+//         globalVariables.forEach(function (variable) {
+//             var name = variable.name;
+//             var value = variable.value;
+//             globalVariableCode += '\tvar ' + name;
+//             if (value === null) {
+//                 globalVariableCode += ';\n';
+//             } else {
+//                 if (isNaN(value)) {
+//                     globalVariableCode += ' = "' + value + '";\n';
+//                 } else {
+//                     globalVariableCode += ' = ' + value + ';\n'
+//                 }
+//             }
+//         });
+//         return globalVariableCode;
+//     }
+// }

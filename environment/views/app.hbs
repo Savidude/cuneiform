@@ -11,13 +11,13 @@
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700italic,700,900,900italic" rel="stylesheet">
 
-    <!-- STYLESHEETS -->
-    <style type="text/css">
-        [fuse-cloak],
-        .fuse-cloak {
-            display: none !important;
-        }
-    </style>
+    <!--&lt;!&ndash; STYLESHEETS &ndash;&gt;-->
+    <!--<style type="text/css">-->
+        <!--[fuse-cloak],-->
+        <!--.fuse-cloak {-->
+            <!--display: none !important;-->
+        <!--}-->
+    <!--</style>-->
     <!-- Icons.css -->
     <link type="text/css" rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
     <!-- Fuse Html -->
@@ -26,6 +26,9 @@
     <link type="text/css" rel="stylesheet" href="bower_components/animate.css/animate.min.css" />
     <!--Ladda CSS-->
     <link type="text/css" rel="stylesheet" href="bower_components/ladda/dist/ladda.min.css" />
+    <!--CodeMirrir CSS-->
+    <link type="text/css" rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
+    <link type="text/css" rel="stylesheet" href="bower_components/codemirror/theme/elegant.css" />
     <!-- Main CSS -->
     <link type="text/css" rel="stylesheet" href="stylesheets/main.css">
     <!--Style CSS-->
@@ -40,6 +43,9 @@
     <!--Ladda JS-->
     <script type="text/javascript" src="bower_components/ladda/dist/spin.min.js"></script>
     <script type="text/javascript" src="bower_components/ladda/dist/ladda.min.js"></script>
+    <!--CodeMirrir JS-->
+    <script type="text/javascript" src="bower_components/codemirror/lib/codemirror.js"></script>
+    <script type="text/javascript" src="bower_components/codemirror/mode/javascript/javascript.js"></script>
     <!-- Fuse Html -->
     <script type="text/javascript" src="vendor/fuse-html/fuse-html.min.js"></script>
     <!--New App JS-->
@@ -162,7 +168,9 @@
                     <div class="page-content-wrapper custom-scrollbar">
                         <!-- CONTENT -->
                         <div class="p-6">
+                            <div id="intent-code-editor" class="code-editor">
 
+                            </div>
                         </div>
                         <!-- / CONTENT -->
                     </div>
@@ -240,10 +248,44 @@
                                 </div>
 
                                 <div class="tab-pane fade" id="nodes" role="tabpanel">
-                                    <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko
-                                        farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic
-                                        magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY
-                                        ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</p>
+                                    <div class="card">
+                                        <div class="card-header" role="tab" id="headingOne" data-toggle="collapse" href="#collapseOne">
+                                            <h3 class="mb-0">
+                                                <span>Create new node</span>
+                                                <button type="button" class="quick-panel-button btn btn-icon btn-sm">
+                                                    <i class="mdi mdi-plus"></i>
+                                                </button>
+                                            </h3>
+                                        </div>
+                                        <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                            <div class="card-block">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" id="name-text" placeholder="Name">
+                                                    <label class="form-control-label" for="name-text">Name</label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input class="form-control" type="number" value="5" id="priority-input"/>
+                                                    <label for="priority-input">Priority</label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <textarea class="form-control" id="preconditions-text" rows="2"></textarea>
+                                                    <label for="conditions-text">Preconditions</label>
+                                                </div>
+                                                <button type="button" class="btn btn-outline-secondary btn-lg btn-block"
+                                                    data-toggle="modal" data-target="#new-node-modal">
+                                                    <i class="mdi mdi-code-braces"></i>
+                                                    <span>Action Code</span>
+                                                </button> <br>
+                                                <button type="button" class="btn btn-primary" onclick="createNode()">Create Node</button>
+                                            </div>
+                                        </div>
+                                    </div> <br>
+
+                                    <div class="divider"></div> <br>
+
+                                    <div id="nodes-list">
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -271,6 +313,58 @@
                             </div>
                         </div>
                     </div>
+                    <div id="new-node-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-lg code-editor-modal">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myLargeModalLabel">New node action</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="new-node-code-editor" class="code-editor">
+
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                            onclick="clearNewNodeEditor()">
+                                        Close
+                                    </button>
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="node-action-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-lg code-editor-modal">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myLargeModalLabel">Node Action</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="node-code-editor" class="code-editor">
+
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                            onclick="clearNodeEditor()">
+                                        Close
+                                    </button>
+                                    <button type="button" id="update-btn" class="btn btn-primary"
+                                            data-dismiss="modal">
+                                        Save changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

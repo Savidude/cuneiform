@@ -23,6 +23,14 @@
     width: 50%;
 }
 
+.card-header span {
+    color: #757575;
+}
+
+.card-header button {
+    float: right;
+}
+
 .created-slot {
     width: 100%;
     border-style: solid;
@@ -175,4 +183,26 @@
 }
 #variables-table thead {
     color: #757575;
+}
+
+
+.code-editor-modal {
+    height: 90%;
+}
+.code-editor-modal .modal-content {
+    height: auto;
+    min-height: 100%;
+    border-radius: 0;
+}
+.code-editor-modal .modal-body {
+    height: auto;
+    min-height: 100%;
+    border-radius: 0;
+}
+.code-editor {
+    height: 100%;
+}
+.CodeMirror {
+    border: 1px solid #eee;
+    height: 100%;
 }

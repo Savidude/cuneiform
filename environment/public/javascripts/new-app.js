@@ -157,6 +157,7 @@ function showIntentEnvironment(intent) {
         data: JSON.stringify(intentData),
         success: function (result) {
             var globalVariables = result.global_variables;
+            nodes = result.nodes;
             globalVariables.forEach(function (variable) {
                 var name = variable.name;
                 var value;
@@ -167,6 +168,8 @@ function showIntentEnvironment(intent) {
                 }
                 showVariable(name, value);
             });
+            updateIntentCode();
+            showNodes();
         },
         error: function (error) {
             if (error.status === 500) {

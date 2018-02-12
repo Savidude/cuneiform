@@ -252,29 +252,3 @@ function getIntentAST() {
     return __dirname.replace("environment" + path.sep + "routes",
         "manager" + path.sep + "ast.py");
 }
-
-// function generateCuneiformCode(intentName, globalVariables) {
-//     var code = intentName + ' {\n';
-//     code += generateGlobalVariableCode();
-//     code += '}';
-//     return code;
-//
-//     function generateGlobalVariableCode() {
-//         var globalVariableCode = '';
-//         globalVariables.forEach(function (variable) {
-//             var name = variable.name;
-//             var value = variable.value;
-//             globalVariableCode += '\tvar ' + name;
-//             if (value === null) {
-//                 globalVariableCode += ';\n';
-//             } else {
-//                 if (isNaN(value)) {
-//                     globalVariableCode += ' = "' + value + '";\n';
-//                 } else {
-//                     globalVariableCode += ' = ' + value + ';\n'
-//                 }
-//             }
-//         });
-//         return globalVariableCode;
-//     }
-// }

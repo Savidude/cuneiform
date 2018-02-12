@@ -4,7 +4,7 @@ import logging
 import json
 
 from interpreter import Lexer as Lexer
-from interpreter import Parser as Parser
+from interpreter import SimpleParser as Parser
 
 
 def get_intents_dir_path():
@@ -50,29 +50,6 @@ def get_intent(intent):
     )
 
 
-def get_global_variables(variable_assignments):
-    """ Processes global variables as an object and returns them as a list
-    :param variable_assignments: variable assignments and declarations as an object
-    :return: list of global variables and their values
-    """
-    assignments = variable_assignments.assign
-    declarations = variable_assignments.decl
-
-    global_variables = []
-    for decl_val in declarations:
-        var_name = decl_val.var.value
-        var_val = None
-
-        for assign_val in assignments:
-            if var_name == assign_val.left.value:
-                var_val = assign_val.right.value
-
-        variable = {'name': var_name, 'value': var_val}
-        global_variables.append(variable)
-
-    return global_variables
-
-
 def main():
     input_data = sys.stdin.readlines()
     intent_data = json.loads(input_data[0])
@@ -81,15 +58,8 @@ def main():
     intent = get_intent(intent_name)
     lexer = Lexer(intent)
     parser = Parser(lexer)
-    tree = parser.parse()
+    intent_data = parser.parse()
 
-    intent_data = {}
-
-    block = tree.block
-    variable_assignments = block.variable_assignments
-    global_variables = get_global_variables(variable_assignments)
-
-    intent_data['global_variables'] = global_variables
     print(json.dumps(intent_data))
 
 

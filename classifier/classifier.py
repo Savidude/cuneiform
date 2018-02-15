@@ -14,7 +14,6 @@ logging.basicConfig(filename=os.getcwd().replace('classifier', '') + 'system.log
                     level=logging.INFO,
                     format='%(asctime)s - %(filename)s [%(levelname)s]: %(message)s')
 
-
 COMMAND = 'command'
 CONFIRM = 'confirm'
 ANSWER = 'answer'
@@ -300,10 +299,15 @@ def update_session_data(session_id, intent_name, action_type, db_conn):
     :param db_conn: database connection object
     :return: None
     """
-    update_query = "UPDATE sessions SET intent=?, expected_action_type=? WHERE sessionid=?"
     try:
         cur = db_conn.cursor()
-        cur.execute(update_query, (intent_name, action_type, session_id))
+        if action_type == 'exit':
+            query = "DELETE FROM sessions WHERE sessionid=?"
+            cur.execute(query, (session_id,))
+        else:
+            query = "UPDATE sessions SET intent=?, expected_action_type=? WHERE sessionid=?"
+            cur.execute(query, (intent_name, action_type, session_id))
+
         db_conn.commit()
     except Error as e:
         logging.error("Error while updating user session data: " + str(e))

@@ -106,6 +106,7 @@ class BinOp(AST):
 
 class Var(AST):
     """ The Var node is constructed out of the ID token. """
+
     def __init__(self, token):
         super().__init__()
         self.token = token
@@ -435,22 +436,34 @@ class Parser(object):
                     logic = [conditional_statement]
                 else:
                     logic.append(conditional_statement)
+            if self.current_token.type == lexer.SYSOP:
+                if self.current_token.value == lexer.EXIT_INTENT:
+                    system_operation = self.system_operation()
+                    if 'logic' not in locals():
+                        logic = [system_operation]
+                    else:
+                        logic.append(system_operation)
 
         node = CodeBlock(logic)
         return node
 
     def system_operation(self):
-        """ system_operation : variable DOT (assignment | operation) SEMI """
-        variable = self.variable()
-        self.eat(lexer.DOT)
-        if self.lexer.current_char == ';':
+        """ system_operation : ((variable DOT (assignment | operation)) | operation) SEMI """
+        if self.lexer.current_char == '.':
+            variable = self.variable()
+            self.eat(lexer.DOT)
+            if self.lexer.current_char == ';':
+                operation_name = self.operation().value
+                self.eat(lexer.SEMI)
+                node = SysOpOperation(variable, operation_name)
+            else:
+                property = self.property_assignment()
+                self.eat(lexer.SEMI)
+                node = SysOpProperty(variable, property)
+        else:
             operation_name = self.operation().value
             self.eat(lexer.SEMI)
-            node = SysOpOperation(variable, operation_name)
-        else:
-            property = self.property_assignment()
-            self.eat(lexer.SEMI)
-            node = SysOpProperty(variable, property)
+            node = SysOpOperation(None, operation_name)
 
         return node
 
@@ -639,9 +652,12 @@ class Parser(object):
         return Slot(self.variable())
 
     def variable(self):
-        """ variable : ID """
+        """ variable : (ID | SYSOP) """
         node = Var(self.current_token)
-        self.eat(lexer.ID)
+        if self.current_token.type == lexer.ID:
+            self.eat(lexer.ID)
+        elif self.current_token.type == lexer.SYSOP:
+            self.eat(lexer.SYSOP)
         return node
 
     def empty(self):

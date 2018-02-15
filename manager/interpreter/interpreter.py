@@ -30,6 +30,8 @@ USER_ACTION_COMMAND = 'command'
 USER_ACTION_CONFIRM = 'confirm'
 USER_ACTION_SELECT = 'select'
 
+USER_ACTION_EXIT = 'exit'
+
 RESPONSE_SUCCESS = 200
 
 RESPONSE_INVALID_USER = 401
@@ -348,13 +350,22 @@ class Interpreter(NodeVisitor):
     def visit_SysOpOperation(self, node):
         if node._id > self.node_id:
             variable = node.sysop
+
+            if variable is None:
+                # Exit Intent operation
+                if node.operation_name == lexer.EXIT_INTENT:
+                    response_data = (None, USER_ACTION_EXIT)
+                    return response_data
+
             sys_op = self.visit(variable)
 
+            # String system operation
             if type(sys_op).__name__ == STRING:
                 string = String(sys_op)
                 operation_name = node.operation_name
                 return string.execute_operation(operation_name)
             else:
+                # Response system operation
                 if sys_op.value == lexer.RESPONSE:
                     response = sys_op.get_op_object()
                     if response is None:
@@ -365,6 +376,7 @@ class Interpreter(NodeVisitor):
                     operation_name = node.operation_name
                     return response.execute_operation(operation_name)
 
+                # Internal Database System operation
                 elif sys_op.value == lexer.INTERNAL_DATABASE:
                     internal_database = sys_op.get_op_object()
                     if internal_database is None:
@@ -375,6 +387,7 @@ class Interpreter(NodeVisitor):
                     operation_name = node.operation_name
                     return internal_database.execute_operation(operation_name)
 
+                # File system operation
                 elif sys_op.value == lexer.FILE:
                     file = sys_op.get_op_object()
                     if file is None:
@@ -385,6 +398,7 @@ class Interpreter(NodeVisitor):
                     operation_name = node.operation_name
                     return file.execute_operation(operation_name)
 
+        # Returning back to the node the interpreter was on before a response was sent
         elif node._id == self.node_id:
             self.node_id = -1
             variable = node.sysop

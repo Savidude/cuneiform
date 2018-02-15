@@ -21,6 +21,7 @@ SYSOP = 'SYSOP'
 RESPONSE = 'RESPONSE'
 INTERNAL_DATABASE = 'INTERNAL_DATABASE'
 FILE = 'FILE'
+EXIT_INTENT = 'ExitIntent'
 
 # Tokens
 INTEGER_CONST = 'INTEGER_CONST'
@@ -89,7 +90,8 @@ RESERVED_KEYWORDS = {
 SYSTEM_OPERATIONS = {
     'Response': Token(SYSOP, RESPONSE),
     'InternalDatabase': Token(SYSOP, INTERNAL_DATABASE),
-    'File': Token(SYSOP, FILE)
+    'File': Token(SYSOP, FILE),
+    'ExitIntent': Token(SYSOP, EXIT_INTENT)
 }
 
 

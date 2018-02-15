@@ -140,6 +140,11 @@ def init_dialog_manager(max_clients, dialog_manager_port):
                     message_data['intent'] = intent_name
                     message = json.dumps(message_data)
                     socket_conn.send(message.encode())
+
+                    if action_type == 'exit':
+                        del USER_MEMORY[session_id]
+                        del USER_TREES[session_id]
+                        del USER_SLOTS[session_id]
                 else:
                     message_data = {}
                     message_data['sessionid'] = session_id
@@ -148,8 +153,6 @@ def init_dialog_manager(max_clients, dialog_manager_port):
                     message_data['intent'] = None
                     message = json.dumps(message_data)
                     socket_conn.send(message.encode())
-
-                    del USER_SLOTS[session_id]
 
                     print('')
                     print('Run-time GLOBAL_MEMORY contents:')

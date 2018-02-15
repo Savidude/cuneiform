@@ -280,16 +280,23 @@ class SimpleParser(object):
                 self.loop()
             if self.current_token.type == lexer.IF:
                 self.conditional_statement()
+            if self.current_token.type == lexer.SYSOP:
+                if self.current_token.value == lexer.EXIT_INTENT:
+                    self.system_operation()
 
     def system_operation(self):
         """ system_operation : variable DOT (assignment | operation) SEMI """
-        self.variable()
-        self.eat(lexer.DOT)
-        if self.lexer.current_char == ';':
-            self.operation()
-            self.eat(lexer.SEMI)
+        if self.lexer.current_char == '.':
+            self.variable()
+            self.eat(lexer.DOT)
+            if self.lexer.current_char == ';':
+                self.operation()
+                self.eat(lexer.SEMI)
+            else:
+                self.property_assignment()
+                self.eat(lexer.SEMI)
         else:
-            self.property_assignment()
+            self.operation()
             self.eat(lexer.SEMI)
 
     def operation(self):
@@ -436,7 +443,10 @@ class SimpleParser(object):
 
     def variable(self):
         """ variable : ID """
-        self.eat(lexer.ID)
+        if self.current_token.type == lexer.ID:
+            self.eat(lexer.ID)
+        elif self.current_token.type == lexer.SYSOP:
+            self.eat(lexer.SYSOP)
 
     def array(self):
         """ array : LSQB ((string | expr | object | array ) COMMA )* RSQB """

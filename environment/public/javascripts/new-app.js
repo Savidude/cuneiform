@@ -66,6 +66,12 @@ $( document ).ready(function() {
     });
 });
 
+function loadIntentCodeEditor() {
+    setTimeout(function () {
+        intentCodeEditor.refresh();
+    }, 500);
+}
+
 function sendMessage() {
     var messageText = document.getElementById("message-text");
     var message = messageText.value;
@@ -170,6 +176,7 @@ function showIntentEnvironment(intent) {
             });
             updateIntentCode();
             showNodes();
+            generateGraph(nodes);
         },
         error: function (error) {
             if (error.status === 500) {
@@ -323,6 +330,9 @@ function updateIntentCode() {
 
     var code = generateCuneiformCode();
     intentCodeEditor.getDoc().setValue(code);
+    setTimeout(function () {
+        this.intentCodeEditor.refresh();
+    }, 1);
 
     function getGlobalVariables() {
         var variablesTable = document.getElementById("variables-table");

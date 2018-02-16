@@ -145,6 +145,11 @@ def init_dialog_manager(max_clients, dialog_manager_port):
                         del USER_MEMORY[session_id]
                         del USER_TREES[session_id]
                         del USER_SLOTS[session_id]
+
+                        print('')
+                        print('Run-time GLOBAL_MEMORY contents:')
+                        for k, v in sorted(interpreter.GLOBAL_MEMORY.items()):
+                            print('%s = %s' % (k, v))
                 else:
                     message_data = {}
                     message_data['sessionid'] = session_id

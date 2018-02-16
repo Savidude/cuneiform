@@ -11,13 +11,6 @@
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700italic,700,900,900italic" rel="stylesheet">
 
-    <!--&lt;!&ndash; STYLESHEETS &ndash;&gt;-->
-    <!--<style type="text/css">-->
-        <!--[fuse-cloak],-->
-        <!--.fuse-cloak {-->
-            <!--display: none !important;-->
-        <!--}-->
-    <!--</style>-->
     <!-- Icons.css -->
     <link type="text/css" rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
     <!-- Fuse Html -->
@@ -48,8 +41,11 @@
     <script type="text/javascript" src="bower_components/codemirror/mode/javascript/javascript.js"></script>
     <!-- Fuse Html -->
     <script type="text/javascript" src="vendor/fuse-html/fuse-html.min.js"></script>
+    <!--GO JS-->
+    <script type="text/javascript" src="bower_components/gojs/release/go.js"></script>
     <!--New App JS-->
     <script type="text/javascript" src="javascripts/new-app.js"></script>
+    <script type="text/javascript" src="javascripts/graph.js"></script>
     <!-- / JAVASCRIPT -->
 </head>
 
@@ -167,9 +163,28 @@
                 <div class="page-layout simple right-sidebar">
                     <div class="page-content-wrapper custom-scrollbar">
                         <!-- CONTENT -->
-                        <div class="p-6">
-                            <div id="intent-code-editor" class="code-editor">
-
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#graph-tab" role="tab">
+                                    <i class="mdi mdi-chart-bubble"></i>
+                                    <span>Graph</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#code-tab" role="tab" onclick="loadIntentCodeEditor()">
+                                    <i class="mdi mdi-code-braces"></i>
+                                    <span>Code</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="graph-tab" role="tabpanel">
+                                <div class="p-6">
+                                    <div id="intent-graph" class="graph"></div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="code-tab" role="tabpanel">
+                                <div id="intent-code-editor" class="code-editor"></div>
                             </div>
                         </div>
                         <!-- / CONTENT -->
@@ -202,10 +217,10 @@
                         <div class="code-info">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#variables" role="tab" aria-controls="home" aria-expanded="true">Variables</a>
+                                    <a class="nav-link active" data-toggle="tab" href="#variables" role="tab" aria-expanded="true">Variables</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#nodes" role="tab" aria-controls="profile">Nodes</a>
+                                    <a class="nav-link" data-toggle="tab" href="#nodes" role="tab">Nodes</a>
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link" data-toggle="tab" href="#" role="button" aria-haspopup="true" aria-expanded="false">

@@ -18,6 +18,15 @@ $( document ).ready(function() {
             }
         }
     });
+
+    document.getElementById("type-select").onchange = function () {
+        var type = this.value;
+        if (type !== "custom") {
+            document.getElementById("slot-info").style.display = "none";
+        } else {
+            document.getElementById("slot-info").style.display = "block";
+        }
+    }
 });
 
 function generateIntentData(intent) {

@@ -88,22 +88,24 @@ def process_slots():
         if slots:
             intent_data = {'name': intent['name'], 'slots': []}
             for slot in slots:
-                slot_data = {'name': slot['name'], 'values': []}
-                synonyms = slot['synonyms']
-                values = slot['values']
-                for value in values:
-                    value_data = {'name': value, 'words': []}
-                    for synonym in synonyms:
-                        if synonym['value'] == value:
-                            words = stem_slots(value, synonym['synonyms'])
-                            for word in words:
-                                value_data['words'].append(word)
+                slot_data = {'name': slot['name'], 'type': slot['type'], 'values': []}
+                slot_type = slot['type']
+                if slot_type == 'custom':
+                    synonyms = slot['synonyms']
+                    values = slot['values']
+                    for value in values:
+                        value_data = {'name': value, 'words': []}
+                        for synonym in synonyms:
+                            if synonym['value'] == value:
+                                words = stem_slots(value, synonym['synonyms'])
+                                for word in words:
+                                    value_data['words'].append(word)
+                                slot_data['values'].append(value_data)
+                                break
+                        if len(value_data['words']) == 0:
+                            words = stem_slots(value, None)
+                            value_data['words'].append(words[0])
                             slot_data['values'].append(value_data)
-                            break
-                    if len(value_data['words']) == 0:
-                        words = stem_slots(value, None)
-                        value_data['words'].append(words[0])
-                        slot_data['values'].append(value_data)
 
                 intent_data['slots'].append(slot_data)
             slots_data['intents'].append(intent_data)

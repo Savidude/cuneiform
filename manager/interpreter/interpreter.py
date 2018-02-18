@@ -10,6 +10,7 @@ from .system import File
 
 from .system import String
 from .system import Array
+from .system import DateTime
 
 MAIN = 'main'
 
@@ -25,6 +26,7 @@ REMOVE = 'remove'
 
 STRING = 'str'
 ARRAY = 'Array'
+DATETIME = 'DateTime'
 
 USER_ACTION_COMMAND = 'command'
 USER_ACTION_CONFIRM = 'confirm'
@@ -257,8 +259,7 @@ class Interpreter(NodeVisitor):
 
     def visit_Assign(self, node):
         if node._id > self.node_id:
-            if type(
-                    node.right).__name__ == SYS_OP_OPERATION and self.node_id == -1 and node.right.operation_name == SEND:
+            if type(node.right).__name__ == SYS_OP_OPERATION and self.node_id == -1 and node.right.operation_name == SEND:
                 return self.visit(node.right)
             else:
                 var_name = node.left.value
@@ -278,7 +279,12 @@ class Interpreter(NodeVisitor):
         var_name = node.variable.value
         for slot in self.slots:
             if slot.get('slot') == var_name:
-                return slot.get('value')
+                slot_value = slot.get('value')
+                if type(slot_value).__name__ == 'dict':
+                    if slot_value['type'] == DATETIME:
+                        return DateTime(slot_value['value'])
+                else:
+                    return slot_value
 
     def visit_UnaryOp(self, node):
         op = node.op.type
@@ -364,6 +370,9 @@ class Interpreter(NodeVisitor):
                 string = String(sys_op)
                 operation_name = node.operation_name
                 return string.execute_operation(operation_name)
+            elif type(sys_op).__name__ == DATETIME:
+                operation_name = node.operation_name
+                return sys_op.execute_operation(operation_name)
             else:
                 # Response system operation
                 if sys_op.value == lexer.RESPONSE:

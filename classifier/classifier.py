@@ -10,6 +10,8 @@ from nltk.stem.lancaster import LancasterStemmer
 import sqlite3
 from sqlite3 import Error
 
+from dateparser.search import search_dates
+
 logging.basicConfig(filename=os.getcwd().replace('classifier', '') + 'system.log',
                     level=logging.INFO,
                     format='%(asctime)s - %(filename)s [%(levelname)s]: %(message)s')
@@ -73,6 +75,21 @@ def create_connection():
     return None
 
 
+def identify_datetime(message):
+    dates = search_dates(message)
+    if dates is not None:
+        identified_datetime = dates[-1][1]
+        datetime_data = {}
+        datetime_data['year'] = identified_datetime.year
+        datetime_data['month'] = identified_datetime.month
+        datetime_data['day'] = identified_datetime.day
+        datetime_data['hour'] = identified_datetime.hour
+        datetime_data['minute'] = identified_datetime.minute
+        datetime_data['second'] = identified_datetime.second
+        return datetime_data
+    return None
+
+
 def identify_slot_values(intent_name, message):
     """ identifies slot values from the provided message
     :param intent_name: name of current intent
@@ -90,13 +107,29 @@ def identify_slot_values(intent_name, message):
     multi_word_slot_value_index = 1
     multi_word_slot_value_data = {}
 
-    if intent_name is None:
-        for i, message_word in enumerate(tokenized_message):
-            message_word = stemmer.stem(message_word)
-            if len(multi_word_slot_value) == 0:
-                intents_list = slots_data['intents']
-                for intent in intents_list:
+    intents_list = slots_data['intents']
+    for intent in intents_list:
+        if intent_name is None:
+            intent_name = intent['name']
+        if intent_name == intent['name']:
+            slots_list = intent['slots']
+            for slot in slots_list:
+                slot_type = slot['type']
+                if slot_type == "datetime":
+                    identified_datetime = identify_datetime(message)
+                    if identified_datetime is not None:
+                        datetime_data = {'type': 'DateTime', 'value': identified_datetime}
+                        slot_data = {'intent': intent_name, 'slot': slot['name'], 'value': datetime_data}
+                        identified_slots.append(slot_data)
+                # TODO: Implement number slots
+
+    for i, message_word in enumerate(tokenized_message):
+        message_word = stemmer.stem(message_word)
+        if len(multi_word_slot_value) == 0:
+            for intent in intents_list:
+                if intent_name is None:
                     intent_name = intent['name']
+                if intent_name == intent['name']:
                     slots_list = intent['slots']
                     for slot in slots_list:
                         slot_name = slot['name']
@@ -128,82 +161,25 @@ def identify_slot_values(intent_name, message):
                                         word = word.replace('-', '')
                                         is_multi_word_slot_value = False
                                         multi_word_slot_value.append(word)
-                                        break
-            else:
-                if message_word == multi_word_slot_value[multi_word_slot_value_index]:
-                    if multi_word_slot_value_index == len(multi_word_slot_value) - 1:
-                        identified_slots.append(multi_word_slot_value_data)
-                        multi_word_slot_value = []
-                        multi_word_slot_value_index = 1
-                        multi_word_slot_value_data = {}
-                    else:
-                        multi_word_slot_value_index += 1
-                else:
-                    # Adding words visited while trying to identify a multi word slot value back to the
-                    # tokenized messages list
-                    del multi_word_slot_value[0]
-                    for index, value in enumerate(multi_word_slot_value):
-                        tokenized_message.insert((i + index + 1), value)
+                                    break
+        else:
+            if message_word == multi_word_slot_value[multi_word_slot_value_index]:
+                if multi_word_slot_value_index == len(multi_word_slot_value) - 1:
+                    identified_slots.append(multi_word_slot_value_data)
                     multi_word_slot_value = []
                     multi_word_slot_value_index = 1
                     multi_word_slot_value_data = {}
-    else:
-        for i, message_word in enumerate(tokenized_message):
-            message_word = stemmer.stem(message_word)
-            if len(multi_word_slot_value) == 0:
-                intents_list = slots_data['intents']
-                for intent in intents_list:
-                    if intent_name == intent['name']:
-                        slots_list = intent['slots']
-                        for slot in slots_list:
-                            slot_name = slot['name']
-                            slot_values = slot['values']
-                            for value in slot_values:
-                                words = value['words']
-                                is_multi_word_slot_value = False
-                                for word in words:
-                                    if not is_multi_word_slot_value:
-                                        if '-' not in word:
-                                            if message_word == word:
-                                                slot_data = {'intent': intent_name, 'slot': slot_name,
-                                                             'value': value['name']}
-                                                identified_slots.append(slot_data)
-                                        else:
-                                            if word.endswith('-'):
-                                                word = word.replace('-', '')
-                                                if message_word == word:
-                                                    is_multi_word_slot_value = True
-                                                    multi_word_slot_value = [word]
-                                                    multi_word_slot_value_data['intent'] = intent_name
-                                                    multi_word_slot_value_data['slot'] = slot_name
-                                                    multi_word_slot_value_data['value'] = value['name']
-                                    else:
-                                        if word.startswith('-') and word.endswith('-'):
-                                            word = word.replace('-', '')
-                                            multi_word_slot_value.append(word)
-                                        elif word.startswith('-') and not word.endswith('-'):
-                                            word = word.replace('-', '')
-                                            is_multi_word_slot_value = False
-                                            multi_word_slot_value.append(word)
-                                            break
-            else:
-                if message_word == multi_word_slot_value[multi_word_slot_value_index]:
-                    if multi_word_slot_value_index == len(multi_word_slot_value) - 1:
-                        identified_slots.append(multi_word_slot_value_data)
-                        multi_word_slot_value = []
-                        multi_word_slot_value_index = 1
-                        multi_word_slot_value_data = {}
-                    else:
-                        multi_word_slot_value_index += 1
                 else:
-                    # Adding words visited while trying to identify a multi word slot value back to the
-                    # tokenized messages list
-                    del multi_word_slot_value[0]
-                    for index, value in enumerate(multi_word_slot_value):
-                        tokenized_message.insert((i + index + 1), value)
-                    multi_word_slot_value = []
-                    multi_word_slot_value_index = 1
-                    multi_word_slot_value_data = {}
+                    multi_word_slot_value_index += 1
+            else:
+                # Adding words visited while trying to identify a multi word slot value back to the
+                # tokenized messages list
+                del multi_word_slot_value[0]
+                for index, value in enumerate(multi_word_slot_value):
+                    tokenized_message.insert((i + index + 1), value)
+                multi_word_slot_value = []
+                multi_word_slot_value_index = 1
+                multi_word_slot_value_data = {}
 
     return identified_slots
 

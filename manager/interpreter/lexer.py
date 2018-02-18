@@ -21,6 +21,7 @@ SYSOP = 'SYSOP'
 RESPONSE = 'RESPONSE'
 INTERNAL_DATABASE = 'INTERNAL_DATABASE'
 FILE = 'FILE'
+DATETIME = 'DATETIME'
 EXIT_INTENT = 'ExitIntent'
 
 # Tokens
@@ -91,6 +92,7 @@ SYSTEM_OPERATIONS = {
     'Response': Token(SYSOP, RESPONSE),
     'InternalDatabase': Token(SYSOP, INTERNAL_DATABASE),
     'File': Token(SYSOP, FILE),
+    'DateTime': Token(SYSOP, DATETIME),
     'ExitIntent': Token(SYSOP, EXIT_INTENT)
 }
 

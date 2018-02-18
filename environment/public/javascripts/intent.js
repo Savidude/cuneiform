@@ -108,53 +108,74 @@ function updateSlot() {
         }
     });
 
-    var slotDataTable = document.getElementById("slot-data");
-    var slotDataRows = slotDataTable.rows;
+    var slotType = document.getElementById("type-select").value;
+    if (slotType === "custom") {
+        var slotDataTable = document.getElementById("slot-data");
+        var slotDataRows = slotDataTable.rows;
 
-    var values = [];
-    var synonyms = [];
-    for (var i = 0; i < slotDataRows.length; i++) {
-        var row = slotDataRows[i].childNodes;
+        var values = [];
+        var synonyms = [];
+        for (var i = 0; i < slotDataRows.length; i++) {
+            var row = slotDataRows[i].childNodes;
 
-        var valueCol = row[0];
-        var value = valueCol.childNodes[0].innerHTML;
-        values.push(value);
+            var valueCol = row[0];
+            var value = valueCol.childNodes[0].innerHTML;
+            values.push(value);
 
-        var synonymsCol = row[1];
-        var synonymsButtons = synonymsCol.childNodes;
-        if (synonymsButtons.length > 0) {
-            var synonymData = {};
-            synonymData['value'] = value;
-            var synonymsArray = [];
-            for (var j = 0; j < synonymsButtons.length; j++) {
-                var spans = synonymsButtons[j].childNodes;
-                var synonym = spans[1].innerHTML;
-                synonymsArray.push(synonym);
+            var synonymsCol = row[1];
+            var synonymsButtons = synonymsCol.childNodes;
+            if (synonymsButtons.length > 0) {
+                var synonymData = {};
+                synonymData['value'] = value;
+                var synonymsArray = [];
+                for (var j = 0; j < synonymsButtons.length; j++) {
+                    var spans = synonymsButtons[j].childNodes;
+                    var synonym = spans[1].innerHTML;
+                    synonymsArray.push(synonym);
+                }
+                synonymData['synonyms'] = synonymsArray;
+                synonyms.push(synonymData);
             }
-            synonymData['synonyms'] = synonymsArray;
-            synonyms.push(synonymData);
+        }
+
+        slotDataTable.innerHTML = "";
+
+        if (!isUpdatingSlot) {
+            slotData['name'] = slotName;
+            slotData['type'] = slotType;
+            slotData['values'] = values;
+            slotData['synonyms'] = synonyms;
+
+            showCreatedSlot(slotData);
+            slots.push(slotData);
+        } else {
+            slots.forEach(function (slot) {
+                if (slot.name === slotName) {
+                    slot['type'] = slotType;
+                    slot['values'] = values;
+                    slot['synonyms'] = synonyms;
+                }
+            });
+        }
+    } else {
+        if (!isUpdatingSlot) {
+            slotData['name'] = slotName;
+            slotData['type'] = slotType;
+
+            showCreatedSlot(slotData);
+            slots.push(slotData);
+        } else {
+            slots.forEach(function (slot) {
+                if (slot.name === slotName) {
+                    slot = {};
+                    slot['name'] = slotName;
+                    slot['type'] = slotType;
+                }
+            });
         }
     }
-
-    slotDataTable.innerHTML = "";
     $("#createSlotModal").modal('hide');
-
-    if (!isUpdatingSlot) {
-        slotData['name'] = slotName;
-        slotData['values'] = values;
-        slotData['synonyms'] = synonyms;
-
-        showCreatedSlot(slotData);
-        slots.push(slotData);
-    } else {
-        slots.forEach(function (slot) {
-            if (slot.name === slotName) {
-                slot['values'] = values;
-                slot['synonyms'] = synonyms;
-            }
-        });
-    }
-
+    clearModal();
 }
 
 function showCreatedSlot(slotData) {
@@ -177,7 +198,6 @@ function showCreatedSlot(slotData) {
         var index = slots.indexOf(slotData);
         slots.splice(index, 1);
         slot.remove();
-        console.log(JSON.stringify(slots, null, 2));
     };
     slot.appendChild(deleteButton);
 
@@ -197,19 +217,24 @@ function showCreatedSlot(slotData) {
 
 function populateCreateSlotModal(slotData) {
     document.getElementById("slot-name").value = slotData.name;
-
-    var slotDataTable = document.getElementById("slot-data");
-    var values = slotData.values;
-    var synonyms = slotData.synonyms;
-    values.forEach(function (slotValue) {
-        var slotSynonyms = [];
-        synonyms.forEach(function (synonym) {
-            if (synonym.value === slotValue) {
-                slotSynonyms = synonym.synonyms;
-            }
+    var type = slotData.type;
+    if (type === "custom") {
+        var slotDataTable = document.getElementById("slot-data");
+        var values = slotData.values;
+        var synonyms = slotData.synonyms;
+        values.forEach(function (slotValue) {
+            var slotSynonyms = [];
+            synonyms.forEach(function (synonym) {
+                if (synonym.value === slotValue) {
+                    slotSynonyms = synonym.synonyms;
+                }
+            });
+            slotDataTable.appendChild(addSlotValue(slotValue, slotSynonyms));
         });
-        slotDataTable.appendChild(addSlotValue(slotValue, slotSynonyms));
-    });
+    } else {
+        document.getElementById("type-select").value = type;
+        document.getElementById("slot-info").style.display = "none";
+    }
 }
 
 function utteranceTextKeyPressed(event) {
@@ -298,4 +323,5 @@ function clearModal() {
     document.getElementById("value-text").value = "";
     document.getElementById("synonyms-text").value = "";
     document.getElementById("slot-data").innerHTML = "";
+    document.getElementById("type-select").value = "custom";
 }

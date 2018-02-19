@@ -62,6 +62,7 @@ class ObjectElement(AST):
 
 
 class Null(AST):
+    def __init__(self):
         pass
 
 
@@ -378,8 +379,8 @@ class Parser(object):
 
     def condition(self):
         """
-        condition : ((expr | variable | string) (EQUAL | NEQUAL | LESS | GREATER | LEQUAL | GEQUAL)
-                    (expr | variable | string))
+        condition : ((expr | variable | string | null | slot) (EQUAL | NEQUAL | LESS | GREATER | LEQUAL | GEQUAL)
+                    (expr | variable | string| null | slot))
                     | (LPAREN conditions RPAREN)
         """
         if self.current_token.type == lexer.LPAREN:
@@ -388,10 +389,15 @@ class Parser(object):
             self.eat(lexer.RPAREN)
             return node
         else:
-            if self.current_token.type in (lexer.REAL_CONST, lexer.INTEGER_CONST, lexer.ID, lexer.STRING):
+            if self.current_token.type in (lexer.REAL_CONST, lexer.INTEGER_CONST, lexer.ID, lexer.STRING,
+                                           lexer.NULL, lexer.SLOT):
                 if self.current_token.type == lexer.STRING:
                     left = String(self.current_token)
                     self.eat(lexer.STRING)
+                elif self.current_token.type == lexer.NULL:
+                    left = self.null()
+                elif self.current_token.type == lexer.SLOT:
+                    left = self.slot()
                 else:
                     left = self.expr()
 
@@ -402,10 +408,15 @@ class Parser(object):
             else:
                 self.error()
 
-            if self.current_token.type in (lexer.REAL_CONST, lexer.INTEGER_CONST, lexer.ID, lexer.STRING):
+            if self.current_token.type in (lexer.REAL_CONST, lexer.INTEGER_CONST, lexer.ID, lexer.STRING,
+                                           lexer.NULL, lexer.SLOT):
                 if self.current_token.type == lexer.STRING:
                     right = String(self.current_token)
                     self.eat(lexer.STRING)
+                elif self.current_token.type == lexer.NULL:
+                    right = self.null()
+                elif self.current_token.type == lexer.SLOT:
+                    right = self.slot()
                 else:
                     right = self.expr()
 
@@ -560,7 +571,7 @@ class Parser(object):
 
     def declaration(self):
         """
-        declaration : VAR variable ((ASSIGN (object | array | string | null | expr) | NEW system_operation) | empty
+        declaration : VAR variable ((ASSIGN (object | array | string | null | slot | expr) | NEW system_operation) | empty
         """
         self.eat(lexer.VAR)
         left = self.variable()
@@ -610,7 +621,7 @@ class Parser(object):
             return left
 
     def assignment(self):
-        """ assignment : variable ASSIGN ((object | array | expr | null | string) | NEW system_operation) """
+        """ assignment : variable ASSIGN ((object | array | expr | null | slot | string) | NEW system_operation) """
         left = self.variable()
         assign = self.current_token
         self.eat(lexer.ASSIGN)
@@ -733,7 +744,7 @@ class Parser(object):
     def null(self):
         """ null : NULL"""
         self.eat(lexer.NULL)
-        return Null
+        return Null()
 
     def expr(self):
         """ expr : term ((PLUS | MINUS) term)* """

@@ -261,19 +261,29 @@
                                 </div>
                             </div>
 
-                            <form>
-                                <div class="form-row">
-                                    <div class="col">
-                                        <input type="text" id="value-text" class="form-control" placeholder="slot value">
-                                    </div>
-                                    <div class="col" id="synonyms-col"></div>
-                                    <div class="col">
-                                        <input type="text" id="synonyms-text" class="form-control" placeholder="synonyms">
-                                    </div>
-                                </div>
-                            </form> <br><br>
+                            <div class="form-group">
+                                <label for="type-select">Select slot type</label>
+                                <select class="form-control form-control-sm" id="type-select">
+                                    <option value="custom" selected>Custom</option>
+                                    <option value="datetime">Datetime</option>
+                                    <option value="number">Number</option>
+                                </select>
+                            </div>
 
-                            <table id="slot-data"></table>
+                            <div id="slot-info">
+                                <form>
+                                    <div class="form-row">
+                                        <div class="col">
+                                            <input type="text" id="value-text" class="form-control" placeholder="slot value">
+                                        </div>
+                                        <div class="col" id="synonyms-col"></div>
+                                        <div class="col">
+                                            <input type="text" id="synonyms-text" class="form-control" placeholder="synonyms">
+                                        </div>
+                                    </div>
+                                </form> <br><br>
+
+                                <table id="slot-data"></table>
                         </div>
                     </div>
                 </div>

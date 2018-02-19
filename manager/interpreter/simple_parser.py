@@ -92,6 +92,8 @@ class SimpleParser(object):
                         self.array()
                     elif self.current_token.type == lexer.LCB:
                         self.object()
+                    elif self.current_token.type == lexer.NULL:
+                        self.null()
                     else:
                         self.expr()
 
@@ -139,6 +141,8 @@ class SimpleParser(object):
                         self.array()
                     elif self.current_token.type == lexer.LCB:
                         self.object()
+                    elif self.current_token.type == lexer.NULL:
+                        self.null()
                     else:
                         self.expr()
                 if self.current_token.type == lexer.SEMI:
@@ -241,8 +245,8 @@ class SimpleParser(object):
 
     def condition(self):
         """
-        condition : ((expr | variable | string) (EQUAL | NEQUAL | LESS | GREATER | LEQUAL | GEQUAL)
-                    (expr | variable | string))
+        condition : ((expr | variable | string | null | slot) (EQUAL | NEQUAL | LESS | GREATER | LEQUAL | GEQUAL)
+                    (expr | variable | string| null | slot))
                     | (LPAREN conditions RPAREN)
         """
         if self.current_token.type == lexer.LPAREN:
@@ -250,9 +254,14 @@ class SimpleParser(object):
             self.conditions()
             self.eat(lexer.RPAREN)
         else:
-            if self.current_token.type in (lexer.REAL_CONST, lexer.INTEGER_CONST, lexer.ID, lexer.STRING):
+            if self.current_token.type in (lexer.REAL_CONST, lexer.INTEGER_CONST, lexer.ID, lexer.STRING,
+                                           lexer.NULL, lexer.SLOT):
                 if self.current_token.type == lexer.STRING:
                     self.eat(lexer.STRING)
+                elif self.current_token.type == lexer.NULL:
+                    self.null()
+                elif self.current_token.type == lexer.SLOT:
+                    self.slot()
                 else:
                     self.expr()
 
@@ -262,9 +271,14 @@ class SimpleParser(object):
             else:
                 self.error()
 
-            if self.current_token.type in (lexer.REAL_CONST, lexer.INTEGER_CONST, lexer.ID, lexer.STRING):
+            if self.current_token.type in (lexer.REAL_CONST, lexer.INTEGER_CONST, lexer.ID, lexer.STRING,
+                                           lexer.NULL, lexer.SLOT):
                 if self.current_token.type == lexer.STRING:
                     self.eat(lexer.STRING)
+                elif self.current_token.type == lexer.NULL:
+                    self.null()
+                elif self.current_token.type == lexer.SLOT:
+                    self.slot()
                 else:
                     self.expr()
 
@@ -365,75 +379,79 @@ class SimpleParser(object):
             self.code_block()
             self.eat(lexer.RCB)
 
-    def declaration(self):
-        """
-        declaration : VAR variable ((ASSIGN (object | array | string | expr) | NEW system_operation) | empty
-        """
-        self.eat(lexer.VAR)
-        self.variable()
-
-        assign = self.current_token
-        if assign.type == lexer.ASSIGN:
-            self.eat(lexer.ASSIGN)
-            if self.current_token.type == lexer.NEW:
-                self.eat(lexer.NEW)
-                self.eat(lexer.SYSOP)
-            elif self.current_token.type == lexer.SLOT:
-                self.slot()
-            elif self.lexer.current_char == '.':
-                self.system_operation()
-            elif self.lexer.current_char == '[':
-                self.variable()
-                self.eat(lexer.LSQB)
-                if self.current_token.type == lexer.INTEGER_CONST:
-                    self.expr()
-                    self.eat(lexer.RSQB)
-                else:
-                    if self.current_token.type == lexer.STRING:
-                        self.eat(lexer.STRING)
-                    else:
-                        self.variable()
-                    self.eat(lexer.RSQB)
-            elif self.current_token.type == lexer.STRING:
-                self.eat(lexer.STRING)
-            elif self.current_token.type == lexer.LSQB:
-                self.array()
-            elif self.current_token.type == lexer.LCB:
-                self.object()
-            else:
-                self.expr()
-
-    def assignment(self):
-        """ assignment : variable ASSIGN ((object | array | expr | string) | NEW system_operation) """
-        self.variable()
-        self.eat(lexer.ASSIGN)
-        if self.current_token.type == lexer.NEW:
-            self.eat(lexer.NEW)
-            self.eat(lexer.SYSOP)
-        elif self.current_token.type == lexer.SLOT:
-            self.slot()
-        elif self.lexer.current_char == '.':
-            self.system_operation()
-        elif self.lexer.current_char == '[':
-            self.variable()
-            self.eat(lexer.LSQB)
-            if self.current_token.type == lexer.INTEGER_CONST:
-                self.expr()
-                self.eat(lexer.RSQB)
-            else:
-                if self.current_token.type == lexer.STRING:
-                    self.eat(lexer.STRING)
-                else:
-                    self.variable()
-                self.eat(lexer.RSQB)
-        elif self.current_token.type == lexer.STRING:
-            self.eat(lexer.STRING)
-        elif self.current_token.type == lexer.LSQB:
-            self.array()
-        elif self.current_token.type == lexer.LCB:
-            self.object()
-        else:
-            self.expr()
+    # def declaration(self):
+    #     """
+    #     declaration : VAR variable ((ASSIGN (object | array | string | expr) | NEW system_operation) | empty
+    #     """
+    #     self.eat(lexer.VAR)
+    #     self.variable()
+    #
+    #     assign = self.current_token
+    #     if assign.type == lexer.ASSIGN:
+    #         self.eat(lexer.ASSIGN)
+    #         if self.current_token.type == lexer.NEW:
+    #             self.eat(lexer.NEW)
+    #             self.eat(lexer.SYSOP)
+    #         elif self.current_token.type == lexer.SLOT:
+    #             self.slot()
+    #         elif self.lexer.current_char == '.':
+    #             self.system_operation()
+    #         elif self.lexer.current_char == '[':
+    #             self.variable()
+    #             self.eat(lexer.LSQB)
+    #             if self.current_token.type == lexer.INTEGER_CONST:
+    #                 self.expr()
+    #                 self.eat(lexer.RSQB)
+    #             else:
+    #                 if self.current_token.type == lexer.STRING:
+    #                     self.eat(lexer.STRING)
+    #                 else:
+    #                     self.variable()
+    #                 self.eat(lexer.RSQB)
+    #         elif self.current_token.type == lexer.STRING:
+    #             self.eat(lexer.STRING)
+    #         elif self.current_token.type == lexer.LSQB:
+    #             self.array()
+    #         elif self.current_token.type == lexer.LCB:
+    #             self.object()
+    #         elif self.current_token.type == lexer.NULL:
+    #             self.null()
+    #         else:
+    #             self.expr()
+    #
+    # def assignment(self):
+    #     """ assignment : variable ASSIGN ((object | array | expr | string) | NEW system_operation) """
+    #     self.variable()
+    #     self.eat(lexer.ASSIGN)
+    #     if self.current_token.type == lexer.NEW:
+    #         self.eat(lexer.NEW)
+    #         self.eat(lexer.SYSOP)
+    #     elif self.current_token.type == lexer.SLOT:
+    #         self.slot()
+    #     elif self.lexer.current_char == '.':
+    #         self.system_operation()
+    #     elif self.lexer.current_char == '[':
+    #         self.variable()
+    #         self.eat(lexer.LSQB)
+    #         if self.current_token.type == lexer.INTEGER_CONST:
+    #             self.expr()
+    #             self.eat(lexer.RSQB)
+    #         else:
+    #             if self.current_token.type == lexer.STRING:
+    #                 self.eat(lexer.STRING)
+    #             else:
+    #                 self.variable()
+    #             self.eat(lexer.RSQB)
+    #     elif self.current_token.type == lexer.STRING:
+    #         self.eat(lexer.STRING)
+    #     elif self.current_token.type == lexer.LSQB:
+    #         self.array()
+    #     elif self.current_token.type == lexer.LCB:
+    #         self.object()
+    #     elif self.current_token.type == lexer.NULL:
+    #         self.null()
+    #     else:
+    #         self.expr()
 
     def slot(self):
         """ SLOT DOT variable"""
@@ -482,6 +500,10 @@ class SimpleParser(object):
             if self.current_token.type == lexer.COMMA:
                 self.eat(lexer.COMMA)
         self.eat(lexer.RCB)
+
+    def null(self):
+        """ null : NULL"""
+        self.eat(lexer.NULL)
 
     def expr(self):
         """ expr : term ((PLUS | MINUS) term)* """

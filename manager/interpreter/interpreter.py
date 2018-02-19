@@ -192,6 +192,8 @@ class Interpreter(NodeVisitor):
         if type(node.variable_assignments).__name__ == VAR_ASSIGN:
             for assignment in node.variable_assignments.assign:
                 self.visit(assignment)
+            for declaration in node.variable_assignments.decl:
+                self.visit(declaration)
 
         node_list = []
         max_priority = 0
@@ -250,7 +252,11 @@ class Interpreter(NodeVisitor):
         pass
 
     def visit_Declare(self, node):
-        pass
+        if node._id > self.node_id:
+            var_name = node.var.value
+            self.GLOBAL_MEMORY[var_name] = None
+        else:
+            pass
 
     def visit_NoneType(self, node):
         return True
@@ -270,22 +276,26 @@ class Interpreter(NodeVisitor):
 
     def visit_Var(self, node):
         var_name = node.value
-        var_value = self.GLOBAL_MEMORY.get(var_name)
-        if var_value is None:
-            raise NameError("Identifer '{}' does not exit".format(repr(var_name)))
+        if var_name in self.GLOBAL_MEMORY:
+            var_value = self.GLOBAL_MEMORY.get(var_name)
         else:
-            return var_value
+            raise NameError("Identifer '{}' does not exit".format(repr(var_name)))
+        return var_value
 
     def visit_Slot(self, node):
         var_name = node.variable.value
-        for slot in self.slots:
-            if slot.get('slot') == var_name:
-                slot_value = slot.get('value')
-                if type(slot_value).__name__ == 'dict':
-                    if slot_value['type'] == DATETIME:
-                        return DateTime(slot_value['value'])
-                else:
-                    return slot_value
+        if self.slots is not None:
+            for slot in self.slots:
+                if slot.get('slot') == var_name:
+                    slot_value = slot.get('value')
+                    if type(slot_value).__name__ == 'dict':
+                        if slot_value['type'] == DATETIME:
+                            return DateTime(slot_value['value'])
+                    else:
+                        return slot_value
+            return None
+        else:
+            return None
 
     def visit_UnaryOp(self, node):
         op = node.op.type
@@ -426,8 +436,8 @@ class Interpreter(NodeVisitor):
                     return response.get_confirm(self.message)
                 elif user_action == USER_ACTION_SELECT:
                     return response.select_option(self.message)
-                # elif user_action == USER_ACTON_INFO:
-                #     return parser.Null
+                elif user_action == USER_ACTON_INFO:
+                    return None
 
     def visit_ConditionalStatement(self, node):
         statements = node.statements

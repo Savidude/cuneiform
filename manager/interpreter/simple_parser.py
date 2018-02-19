@@ -108,9 +108,10 @@ class SimpleParser(object):
         variable_assignments :((assignment | declaration) SEMI)+
                                 | empty
         """
-        if self.current_token.type in lexer.VAR:
-            while self.current_token.type in lexer.VAR:
-                self.eat(lexer.VAR)
+        if self.current_token.type in (lexer.VAR, lexer.ID):
+            while self.current_token.type in (lexer.VAR, lexer.ID) and self.lexer.current_char != '.':
+                if self.current_token.type == lexer.VAR:
+                    self.eat(lexer.VAR)
                 self.variable()
 
                 assign = self.current_token

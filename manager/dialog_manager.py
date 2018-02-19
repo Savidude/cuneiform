@@ -123,8 +123,14 @@ def init_dialog_manager(max_clients, dialog_manager_port):
                     parser = Parser(lexer)
                     tree = parser.parse()
 
-                    interpreter = Interpreter(tree, user_message, user_intent_slots)
+                    interpreter = Interpreter(tree, user_message, user_intent_slots, OrderedDict(), -1)
                     response_data = interpreter.interpret()
+
+                print('')
+                print('Run-time GLOBAL_MEMORY contents:')
+                for k, v in sorted(interpreter.GLOBAL_MEMORY.items()):
+                    print('%s = %s' % (k, v))
+                interpreter = None
 
                 if response_data is not None:
                     response_text = response_data.response_text
@@ -148,11 +154,6 @@ def init_dialog_manager(max_clients, dialog_manager_port):
                         del USER_MEMORY[session_id]
                         del USER_TREES[session_id]
                         del USER_SLOTS[session_id]
-
-                    print('')
-                    print('Run-time GLOBAL_MEMORY contents:')
-                    for k, v in sorted(interpreter.GLOBAL_MEMORY.items()):
-                        print('%s = %s' % (k, v))
                 else:
                     message_data = {}
                     message_data['sessionid'] = session_id
@@ -162,10 +163,6 @@ def init_dialog_manager(max_clients, dialog_manager_port):
                     message = json.dumps(message_data)
                     socket_conn.send(message.encode())
 
-                    print('')
-                    print('Run-time GLOBAL_MEMORY contents:')
-                    for k, v in sorted(interpreter.GLOBAL_MEMORY.items()):
-                        print('%s = %s' % (k, v))
         except KeyboardInterrupt:
             socket_conn.close()
 

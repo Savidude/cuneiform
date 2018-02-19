@@ -20,6 +20,7 @@ ACTION_GET = 'GET'
 TYPE_VAR = 'VAR'
 SYS_OP_OPERATION = 'SysOpOperation'
 VAR_ASSIGN = 'VarAssign'
+RESPONSE_DATA = 'ResponseData'
 SEND = 'send'
 APPEND = 'append'
 REMOVE = 'remove'
@@ -178,7 +179,7 @@ class BuiltinTypeSymbol(Symbol):
 class Interpreter(NodeVisitor):
     """ Intent Interpreter """
 
-    def __init__(self, tree, message, slots, memory=OrderedDict(), node_id=-1):
+    def __init__(self, tree, message, slots, memory, node_id):
         self.tree = tree
         self.slots = slots
         self.GLOBAL_MEMORY = memory
@@ -242,11 +243,14 @@ class Interpreter(NodeVisitor):
             else:
                 result = self.visit(logic)
                 if result is not None:
-                    response_text = result[0]
-                    node_id = logic._id
-                    action_type = result[1]
-                    response_data = ResponseData(response_text, self.tree, node_id, self.GLOBAL_MEMORY, action_type)
-                    return response_data
+                    if type(result).__name__ != RESPONSE_DATA:
+                        response_text = result[0]
+                        node_id = logic._id
+                        action_type = result[1]
+                        response_data = ResponseData(response_text, self.tree, node_id, self.GLOBAL_MEMORY, action_type)
+                        return response_data
+                    else:
+                        return result
 
     def visit_NoOp(self, node):
         pass
@@ -450,7 +454,9 @@ class Interpreter(NodeVisitor):
 
     def visit_WhileLoop(self, node):
         while self.visit(node.conditions):
-            self.visit(node.code_block)
+            result = self.visit(node.code_block)
+            if result is not None:
+                return result
 
     def visit_ForLoop(self, node):
         array = self.visit(node.array).array

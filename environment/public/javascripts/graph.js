@@ -1,6 +1,11 @@
+var diagram = null;
+
 function generateGraph(nodes) {
     var $$ = go.GraphObject.make;
-    var diagram = $$(go.Diagram, "intent-graph",
+    if (diagram !== null) {
+        diagram.div = null;
+    }
+    diagram = $$(go.Diagram, "intent-graph",
         {
             initialContentAlignment: go.Spot.Center, // center Diagram contents
             "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
@@ -53,24 +58,27 @@ function generateGraph(nodes) {
         );
 
     var nodeDataArray = [];
-    for (var i = 0; i < nodes.length; i++) {
-        var node = nodes[i];
-        var nodeData = {};
-        nodeData["key"] = i;
-        nodeData["name"] = node.name;
-        nodeData["priority"] = "Priority: " + node.priority;
-        nodeData["preconditions"] = "Preconditions:\n" + node.preconditions;
-        nodeDataArray.push(nodeData);
-    }
-
     var linkDataArray = [];
-    for (i = 0; i < nodes.length; i++) {
-        for (var j = 0; j < nodes.length; j++) {
-            if (j !== i) {
-                var link = {};
-                link['from'] = i;
-                link['to'] = j;
-                linkDataArray.push(link);
+
+    if (nodes !== null) {
+        for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            var nodeData = {};
+            nodeData["key"] = i;
+            nodeData["name"] = node.name;
+            nodeData["priority"] = "Priority: " + node.priority;
+            nodeData["preconditions"] = "Preconditions:\n" + node.preconditions;
+            nodeDataArray.push(nodeData);
+        }
+
+        for (i = 0; i < nodes.length; i++) {
+            for (var j = 0; j < nodes.length; j++) {
+                if (j !== i) {
+                    var link = {};
+                    link['from'] = i;
+                    link['to'] = j;
+                    linkDataArray.push(link);
+                }
             }
         }
     }

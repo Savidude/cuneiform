@@ -56,9 +56,12 @@ def main():
     intent_name = intent_data['name']
 
     intent = get_intent(intent_name)
-    lexer = Lexer(intent)
-    parser = Parser(lexer)
-    intent_data = parser.parse()
+    if intent is not '':
+        lexer = Lexer(intent)
+        parser = Parser(lexer)
+        intent_data = parser.parse()
+    else:
+        intent_data = {'global_variables': None, 'nodes': None}
 
     print(json.dumps(intent_data))
 

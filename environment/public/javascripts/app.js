@@ -152,6 +152,7 @@ function showIntentEnvironment(intent) {
     currentIntent = intent.name;
     var intentName = document.getElementById("intent-name");
     intentName.innerHTML = intent.name;
+    document.getElementById("variables-table-body").innerHTML = "";
 
     var intentData = {};
     intentData['name'] = intent.name;
@@ -164,16 +165,18 @@ function showIntentEnvironment(intent) {
         success: function (result) {
             var globalVariables = result.global_variables;
             nodes = result.nodes;
-            globalVariables.forEach(function (variable) {
-                var name = variable.name;
-                var value;
-                if (variable.value === null) {
-                    value = "";
-                } else {
-                    value = variable.value;
-                }
-                showVariable(name, value);
-            });
+            if (globalVariables !== null) {
+                globalVariables.forEach(function (variable) {
+                    var name = variable.name;
+                    var value;
+                    if (variable.value === null) {
+                        value = "";
+                    } else {
+                        value = variable.value;
+                    }
+                    showVariable(name, value);
+                });
+            }
             updateIntentCode();
             showNodes();
             generateGraph(nodes);
@@ -321,7 +324,7 @@ function showVariable(name, value) {
     buttonData.appendChild(deleteButton);
     row.appendChild(buttonData);
 
-    document.getElementById("variables-table").append(row);
+    document.getElementById("variables-table-body").appendChild(row);
 }
 
 function updateIntentCode() {
@@ -335,10 +338,10 @@ function updateIntentCode() {
     }, 1);
 
     function getGlobalVariables() {
-        var variablesTable = document.getElementById("variables-table");
-        var rows = variablesTable.childNodes;
+        var variablesTableBody = document.getElementById("variables-table-body");
+        var rows = variablesTableBody.childNodes;
         var globalVariables = [];
-        for (var i = 3; i < rows.length; i++) {
+        for (var i = 0; i < rows.length; i++) {
             var varData = rows[i].childNodes;
             var name = varData[0].innerHTML;
             var value = varData[1].innerHTML;
@@ -385,28 +388,33 @@ function updateIntentCode() {
 
         function genereateNodeCode() {
             var nodesCode = '';
-            nodes.forEach(function (node) {
-                var nodeCode = '';
-                var name = node.name;
-                nodeCode += '\tnode ' + name + ' {\n';
+            if (nodes !== null) {
+                nodes.forEach(function (node) {
+                    var nodeCode = '';
+                    var name = node.name;
+                    nodeCode += '\tnode ' + name + ' {\n';
 
-                var priority = node.priority;
-                nodeCode += '\t\tpriority : ' + priority + ';\n\n';
+                    var priority = node.priority;
+                    nodeCode += '\t\tpriority : ' + priority + ';\n\n';
 
-                var preconditions = node.preconditions;
-                nodeCode += '\t\tpreconditions {\n';
-                nodeCode += '\t\t\t' + preconditions + '\n';
-                nodeCode += '\t\t}\n';
+                    var preconditions = node.preconditions;
+                    nodeCode += '\t\tpreconditions {\n';
+                    if (preconditions === null) {
+                        preconditions = "";
+                    }
+                    nodeCode += '\t\t\t' + preconditions + '\n';
+                    nodeCode += '\t\t}\n\n';
 
-                var actionCode = node.action_code;
-                nodeCode += '\t\taction {\n';
-                nodeCode += '\t\t\t' + actionCode + '\n';
-                nodeCode += '\t\t}\n';
+                    var actionCode = node.action_code;
+                    nodeCode += '\t\taction {\n';
+                    nodeCode += '\t\t\t' + actionCode + '\n';
+                    nodeCode += '\t\t}\n';
 
-                nodeCode += '\t}\n';
+                    nodeCode += '\t}\n';
 
-                nodesCode += nodeCode;
-            });
+                    nodesCode += nodeCode;
+                });
+            }
             return nodesCode;
         }
     }
@@ -468,50 +476,53 @@ function createNode() {
 }
 
 function showNodes() {
-    nodes.forEach(function (node) {
-        var card = document.createElement("div");
-        card.classList.add("card");
+    var nodesList = document.getElementById("nodes-list");
+    nodesList.innerHTML = "";
 
-        var cardBody = document.createElement("div");
-        cardBody.classList.add("card-body");
-        card.appendChild(cardBody);
+    if (nodes !== null) {
+        nodes.forEach(function (node) {
+            var card = document.createElement("div");
+            card.classList.add("card");
 
-        var nodeName = document.createElement("h4");
-        nodeName.classList.add("card-title");
-        nodeName.innerHTML = node.name;
-        cardBody.appendChild(nodeName);
+            var cardBody = document.createElement("div");
+            cardBody.classList.add("card-body");
+            card.appendChild(cardBody);
 
-        var nodePriority = document.createElement("h6");
-        nodePriority.classList.add("card-subtitle");
-        nodePriority.classList.add("mb-2");
-        nodePriority.classList.add("text-muted");
-        nodePriority.innerHTML = "Priority: " + node.priority;
-        cardBody.appendChild(nodePriority);
+            var nodeName = document.createElement("h4");
+            nodeName.classList.add("card-title");
+            nodeName.innerHTML = node.name;
+            cardBody.appendChild(nodeName);
 
-        var nodePreconditions = document.createElement("p");
-        nodePreconditions.classList.add("card-text");
-        nodePreconditions.innerHTML = "Preconditions:<br>" + node.preconditions;
-        cardBody.appendChild(nodePreconditions);
+            var nodePriority = document.createElement("h6");
+            nodePriority.classList.add("card-subtitle");
+            nodePriority.classList.add("mb-2");
+            nodePriority.classList.add("text-muted");
+            nodePriority.innerHTML = "Priority: " + node.priority;
+            cardBody.appendChild(nodePriority);
 
-        var nodeActionButton = document.createElement("button");
-        nodeActionButton.setAttribute("type", "button");
-        nodeActionButton.classList.add("btn");
-        nodeActionButton.classList.add("btn-outline-secondary");
-        nodeActionButton.classList.add("btn-lg");
-        nodeActionButton.classList.add("btn-block");
-        nodeActionButton.innerHTML = '<i class="mdi mdi-code-braces"></i>' +
-                                    '<span>Action Code</span>';
-        nodeActionButton.onclick = function () {
-            $('#node-action-modal').modal('show');
-            nodeCodeEditor.getDoc().setValue(node.action_code);
+            var nodePreconditions = document.createElement("p");
+            nodePreconditions.classList.add("card-text");
+            nodePreconditions.innerHTML = "Preconditions:<br>" + node.preconditions;
+            cardBody.appendChild(nodePreconditions);
 
-            document.getElementById("update-btn").onclick = function () {
-                node['action_code'] = nodeCodeEditor.getValue();
+            var nodeActionButton = document.createElement("button");
+            nodeActionButton.setAttribute("type", "button");
+            nodeActionButton.classList.add("btn");
+            nodeActionButton.classList.add("btn-outline-secondary");
+            nodeActionButton.classList.add("btn-lg");
+            nodeActionButton.classList.add("btn-block");
+            nodeActionButton.innerHTML = '<i class="mdi mdi-code-braces"></i>' +
+                '<span>Action Code</span>';
+            nodeActionButton.onclick = function () {
+                $('#node-action-modal').modal('show');
+                nodeCodeEditor.getDoc().setValue(node.action_code);
+
+                document.getElementById("update-btn").onclick = function () {
+                    node['action_code'] = nodeCodeEditor.getValue();
+                };
             };
-        };
-        cardBody.appendChild(nodeActionButton);
-        
-        var nodesList = document.getElementById("nodes-list");
-        nodesList.appendChild(card);
-    });
+            cardBody.appendChild(nodeActionButton);
+            nodesList.appendChild(card);
+        });
+    }
 }

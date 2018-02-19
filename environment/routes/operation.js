@@ -108,7 +108,20 @@ router.post('/intent/update', function (req, res) {
             res.status(500).send();
         } else {
             logger.info("Intents updated");
-            res.end('{"success" : "App created", "status" : 200}');
+            if (!isUpdatingIntent) {
+                // Creating Cuneiform file
+                var intentsDirPath = getApplicationsDir() + path.sep + "app" + getMaxApp() + path.sep + "intents";
+                var cuneiformFilePath = intentsDirPath + path.sep + intentName + ".cu";
+                fs.writeFile(cuneiformFilePath, "", "utf-8", function (err) {
+                    if (err) {
+                        logger.error("Error while creating cuneiform file file", err);
+                        res.status(500).send();
+                    } else {
+                        res.end('{"success" : "Intent Created", "status" : 200}');
+                    }
+                })
+            }
+            res.end('{"success" : "Intent updated", "status" : 200}');
         }
     })
 });

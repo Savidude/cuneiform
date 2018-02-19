@@ -1,6 +1,7 @@
 const USER = "user";
 const SYSTEM = "system";
 const NONE = "None";
+const INFO = "system:info";
 
 var isTryVisible = false;
 var isCodeVisible = true;
@@ -77,30 +78,40 @@ function sendMessage() {
     var message = messageText.value;
     messageText.value = "";
 
-    var messageData = {};
-    messageData['sessionid'] = sessionId;
-    messageData['message'] = message;
-    generateMessage(USER, message);
-
-    $.ajax({
-        type: "POST",
-        contentType: 'application/json',
-        dataType: "json",
-        url: "/operation/responder",
-        data: JSON.stringify(messageData),
-        success: function (result) {
-            sessionId = result['sessionid'];
-            var response = result['response'];
-            if (response !== NONE) {
-                generateMessage(SYSTEM, response);
-            }
-        },
-        error: function (error) {
-            if (error.status === 500) {
-                //TODO: Display error
-            }
+    if (message !== "") {
+        var messageData = {};
+        messageData['sessionid'] = sessionId;
+        messageData['message'] = message;
+        if (message !== INFO) {
+            generateMessage(USER, message);
         }
-    });
+
+        $.ajax({
+            type: "POST",
+            contentType: 'application/json',
+            dataType: "json",
+            url: "/operation/responder",
+            data: JSON.stringify(messageData),
+            success: function (result) {
+                sessionId = result['sessionid'];
+                var response = result['response'];
+                var actionType = result['action_type'];
+                if (response !== NONE) {
+                    generateMessage(SYSTEM, response);
+                }
+                //Send an empty message if the action type is "info"
+                if (actionType === "info") {
+                    messageText.value = INFO;
+                    sendMessage();
+                }
+            },
+            error: function (error) {
+                if (error.status === 500) {
+                    //TODO: Display error
+                }
+            }
+        });
+    }
 }
 
 function generateMessage(actor, message) {

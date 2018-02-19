@@ -16,6 +16,8 @@ IN = 'IN'
 MAIN = 'main'
 SLOT = 'Slot'
 
+NULL = 'null'
+
 # System operations
 SYSOP = 'SYSOP'
 RESPONSE = 'RESPONSE'
@@ -85,7 +87,9 @@ RESERVED_KEYWORDS = {
     'new': Token(NEW, 'new'),
     'for': Token(FOR, 'for'),
     'in': Token(IN, 'in'),
-    'Slot': Token(SLOT, 'Slot')
+    'Slot': Token(SLOT, 'Slot'),
+
+    'null': Token(NULL, 'null')
 }
 
 SYSTEM_OPERATIONS = {

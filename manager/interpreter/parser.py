@@ -61,6 +61,10 @@ class ObjectElement(AST):
         self.key = key
 
 
+class Null(AST):
+        pass
+
+
 class SysOp(AST):
     def __init__(self, token):
         super().__init__()
@@ -556,7 +560,7 @@ class Parser(object):
 
     def declaration(self):
         """
-        declaration : VAR variable ((ASSIGN (object | array | string | expr) | NEW system_operation) | empty
+        declaration : VAR variable ((ASSIGN (object | array | string | null | expr) | NEW system_operation) | empty
         """
         self.eat(lexer.VAR)
         left = self.variable()
@@ -595,6 +599,8 @@ class Parser(object):
                 right = self.array()
             elif self.current_token.type == lexer.LCB:
                 right = self.object()
+            elif self.current_token.type == lexer.NULL:
+                right = self.null()
             else:
                 right = self.expr()
 
@@ -604,7 +610,7 @@ class Parser(object):
             return left
 
     def assignment(self):
-        """ assignment : variable ASSIGN ((object | array | expr | string) | NEW system_operation) """
+        """ assignment : variable ASSIGN ((object | array | expr | null | string) | NEW system_operation) """
         left = self.variable()
         assign = self.current_token
         self.eat(lexer.ASSIGN)
@@ -639,6 +645,8 @@ class Parser(object):
             right = self.array()
         elif self.current_token.type == lexer.LCB:
             right = self.object()
+        elif self.current_token.type == lexer.NULL:
+            right = self.null()
         else:
             right = self.expr()
 
@@ -721,6 +729,11 @@ class Parser(object):
                 self.eat(lexer.COMMA)
         self.eat(lexer.RCB)
         return Object(attributes)
+
+    def null(self):
+        """ null : NULL"""
+        self.eat(lexer.NULL)
+        return Null
 
     def expr(self):
         """ expr : term ((PLUS | MINUS) term)* """

@@ -126,11 +126,13 @@ def main():
             message_data = json.loads(response)
             sessionid = message_data['sessionid']
             response_text = message_data['response_text']
+            action_type = message_data['action_type']
             client_socket.close()
 
             message_data = {}
             message_data['sessionid'] = sessionid
             message_data['response'] = str(response_text)
+            message_data['action_type'] = action_type
             print(json.dumps(message_data))
 
 

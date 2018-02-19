@@ -14,6 +14,9 @@ RESPONSE_SUCCESS = 200
 RESPONSE_INVALID_USER = 401
 RESPONSE_INVALID_VARIABLE = 404
 
+ACTION_EXIT = 'exit'
+ACTION_INFO = 'info'
+
 
 def get_config():
     """ get configuration data from file
@@ -141,15 +144,15 @@ def init_dialog_manager(max_clients, dialog_manager_port):
                     message = json.dumps(message_data)
                     socket_conn.send(message.encode())
 
-                    if action_type == 'exit':
+                    if action_type == ACTION_EXIT:
                         del USER_MEMORY[session_id]
                         del USER_TREES[session_id]
                         del USER_SLOTS[session_id]
 
-                        print('')
-                        print('Run-time GLOBAL_MEMORY contents:')
-                        for k, v in sorted(interpreter.GLOBAL_MEMORY.items()):
-                            print('%s = %s' % (k, v))
+                    print('')
+                    print('Run-time GLOBAL_MEMORY contents:')
+                    for k, v in sorted(interpreter.GLOBAL_MEMORY.items()):
+                        print('%s = %s' % (k, v))
                 else:
                     message_data = {}
                     message_data['sessionid'] = session_id

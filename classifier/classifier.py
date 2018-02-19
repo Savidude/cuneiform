@@ -327,6 +327,7 @@ def component_communicator(session_id, intent_name, action_type, slots_data, dia
     message_data = {}
     message_data['sessionid'] = session_id
     message_data['response_text'] = response_text
+    message_data['action_type'] = action_type
     message = json.dumps(message_data)
     client_socket.close()
     socket_conn.send(message.encode())

@@ -31,6 +31,7 @@ DATETIME = 'DateTime'
 USER_ACTION_COMMAND = 'command'
 USER_ACTION_CONFIRM = 'confirm'
 USER_ACTION_SELECT = 'select'
+USER_ACTON_INFO = 'info'
 
 USER_ACTION_EXIT = 'exit'
 
@@ -332,6 +333,9 @@ class Interpreter(NodeVisitor):
             if key == attribute_name:
                 return attribute[1].value
 
+    def visit_Null(self, node):
+        return None
+
     def visit_SysOp(self, node):
         return node
 
@@ -422,6 +426,8 @@ class Interpreter(NodeVisitor):
                     return response.get_confirm(self.message)
                 elif user_action == USER_ACTION_SELECT:
                     return response.select_option(self.message)
+                # elif user_action == USER_ACTON_INFO:
+                #     return parser.Null
 
     def visit_ConditionalStatement(self, node):
         statements = node.statements

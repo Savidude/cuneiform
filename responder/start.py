@@ -85,12 +85,14 @@ def init_responder(max_clients, port, classifier_port):
                 message_data = json.loads(response)
                 sessionid = message_data['sessionid']
                 response_text = message_data['response_text']
+                action_type = message_data['action_type']
                 client_socket.close()
 
                 # Obtained message data from the classifier is sent back to the responder
                 message_data = {}
                 message_data['sessionid'] = sessionid
                 message_data['response_text'] = response_text
+                message_data['action_type'] = action_type
                 message = json.dumps(message_data)
                 conn.send(message.encode())
         except KeyboardInterrupt:

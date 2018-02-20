@@ -25,6 +25,7 @@ SEND = 'send'
 APPEND = 'append'
 REMOVE = 'remove'
 
+VAR = 'Var'
 STRING = 'str'
 ARRAY = 'Array'
 DATETIME = 'DateTime'
@@ -366,6 +367,13 @@ class Interpreter(NodeVisitor):
                     array.append(property[1])
                 elif operation_name == REMOVE:
                     array.remove(property[1].value)
+            elif sys_op.value == lexer.RESPONSE:
+                if type(property[1]).__name__ == VAR:
+                    array = self.visit(property[1])
+                    property = (property[0], parser.Array(array))
+                    sys_op.add_property(property)
+                else:
+                    sys_op.add_property(property)
             else:
                 sys_op.add_property(property)
         else:

@@ -452,7 +452,7 @@ class Parser(object):
                 else:
                     logic.append(conditional_statement)
             if self.current_token.type == lexer.SYSOP:
-                if self.current_token.value == lexer.EXIT_INTENT:
+                if self.current_token.value in (lexer.EXIT_INTENT, lexer.INITIATE):
                     system_operation = self.system_operation()
                     if 'logic' not in locals():
                         logic = [system_operation]

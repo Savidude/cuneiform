@@ -36,6 +36,7 @@ USER_ACTION_SELECT = 'select'
 USER_ACTON_INFO = 'info'
 
 USER_ACTION_EXIT = 'exit'
+SYSTEM_ACTION_INITIATE = 'initiate'
 
 RESPONSE_SUCCESS = 200
 
@@ -197,25 +198,34 @@ class Interpreter(NodeVisitor):
             for declaration in node.variable_assignments.decl:
                 self.visit(declaration)
 
-        node_list = []
-        max_priority = 0
-        for n in node.nodes:
-            if n.name.value == MAIN:
-                node_list = [n]
-                break
-            container = n.container
-            preconditions = container.preconditions
-            if self.visit(preconditions):
-                priority = container.priority.value
-                if priority > max_priority:
-                    max_priority = priority
+        if self.node_id == -1:
+            node_list = []
+            max_priority = 0
+            for n in node.nodes:
+                if n.name.value == MAIN:
                     node_list = [n]
-                elif priority == max_priority:
-                    node_list.append(n)
+                    break
+                container = n.container
+                preconditions = container.preconditions
+                if self.visit(preconditions):
+                    priority = container.priority.value
+                    if priority > max_priority:
+                        max_priority = priority
+                        node_list = [n]
+                    elif priority == max_priority:
+                        node_list.append(n)
+            response_data = self.visit(random.choice(node_list))
+        else:
+            for n in node.nodes:
+                if n._id > self.node_id:
+                    response_data = self.visit(n)
+                    break
 
-        response_data = self.visit(random.choice(node_list))
         if response_data is not None:
-            return response_data
+            if response_data.action_type == SYSTEM_ACTION_INITIATE:
+                return self.visit_Block(node)
+            else:
+                return response_data
 
     def visit_Node(self, node):
         container = node.container
@@ -224,10 +234,10 @@ class Interpreter(NodeVisitor):
 
         print('function: {}, priority: {}, preconditions: {}'.format(node.name.value, priority.value,
                                                                      self.visit(preconditions)))
-        if self.visit(preconditions):
-            action_code = container.action_code
-            response_data = self.visit(action_code)
-            return response_data
+        # if self.visit(preconditions):
+        action_code = container.action_code
+        response_data = self.visit(action_code)
+        return response_data
 
     def visit_CodeBlock(self, node):
         logical_statements = node.logic
@@ -387,6 +397,10 @@ class Interpreter(NodeVisitor):
                 # Exit Intent operation
                 if node.operation_name == lexer.EXIT_INTENT:
                     response_data = (None, USER_ACTION_EXIT)
+                    return response_data
+                # Initiate operation
+                elif node.operation_name == lexer.INITIATE:
+                    response_data = (None, SYSTEM_ACTION_INITIATE)
                     return response_data
 
             sys_op = self.visit(variable)

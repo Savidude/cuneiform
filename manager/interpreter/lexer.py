@@ -25,6 +25,7 @@ INTERNAL_DATABASE = 'INTERNAL_DATABASE'
 FILE = 'FILE'
 DATETIME = 'DATETIME'
 EXIT_INTENT = 'ExitIntent'
+INITIATE = 'INITIATE'
 
 # Tokens
 INTEGER_CONST = 'INTEGER_CONST'
@@ -97,7 +98,8 @@ SYSTEM_OPERATIONS = {
     'InternalDatabase': Token(SYSOP, INTERNAL_DATABASE),
     'File': Token(SYSOP, FILE),
     'DateTime': Token(SYSOP, DATETIME),
-    'ExitIntent': Token(SYSOP, EXIT_INTENT)
+    'ExitIntent': Token(SYSOP, EXIT_INTENT),
+    'Initiate': Token(SYSOP, INITIATE)
 }
 
 

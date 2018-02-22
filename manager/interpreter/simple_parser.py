@@ -87,7 +87,7 @@ class SimpleParser(object):
                                 self.variable()
                             self.eat(lexer.RSQB)
                     elif self.current_token.type == lexer.STRING:
-                        self.eat(lexer.STRING)
+                        self.concat()
                     elif self.current_token.type == lexer.LSQB:
                         self.array()
                     elif self.current_token.type == lexer.LCB:
@@ -137,7 +137,7 @@ class SimpleParser(object):
                                 self.variable()
                             self.eat(lexer.RSQB)
                     elif self.current_token.type == lexer.STRING:
-                        self.eat(lexer.STRING)
+                        self.concat()
                     elif self.current_token.type == lexer.LSQB:
                         self.array()
                     elif self.current_token.type == lexer.LCB:
@@ -148,6 +148,16 @@ class SimpleParser(object):
                         self.expr()
                 if self.current_token.type == lexer.SEMI:
                     self.eat(lexer.SEMI)
+
+    def concat(self):
+        """ string (PLUS (string | variable))* """
+        self.eat(lexer.STRING)
+        while self.current_token.type == lexer.PLUS:
+            self.eat(lexer.PLUS)
+            if self.current_token.type == lexer.STRING:
+                self.eat(lexer.STRING)
+            elif self.current_token.type == lexer.ID:
+                self.variable()
 
     def nodes(self):
         """ nodes : (node)+ """

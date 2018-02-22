@@ -35,6 +35,13 @@ class String(AST):
         self.value = token.value
 
 
+class Concat(AST):
+    def __init__(self, left, right):
+        super().__init__()
+        self.left = left
+        self.right = right
+
+
 class Array(AST):
     def __init__(self, array):
         super().__init__()
@@ -604,8 +611,7 @@ class Parser(object):
                     self.eat(lexer.RSQB)
                     right = ObjectElement(name, key)
             elif self.current_token.type == lexer.STRING:
-                right = String(self.current_token)
-                self.eat(lexer.STRING)
+                right = self.concat()
             elif self.current_token.type == lexer.LSQB:
                 right = self.array()
             elif self.current_token.type == lexer.LCB:
@@ -650,8 +656,7 @@ class Parser(object):
                 self.eat(lexer.RSQB)
                 right = ObjectElement(name, key)
         elif self.current_token.type == lexer.STRING:
-            right = String(self.current_token)
-            self.eat(lexer.STRING)
+            right = self.concat()
         elif self.current_token.type == lexer.LSQB:
             right = self.array()
         elif self.current_token.type == lexer.LCB:
@@ -662,6 +667,19 @@ class Parser(object):
             right = self.expr()
 
         node = Assign(left, assign, right)
+        return node
+
+    def concat(self):
+        """ string (PLUS (string | variable))* """
+        node = String(self.current_token)
+        self.eat(lexer.STRING)
+        while self.current_token.type == lexer.PLUS:
+            self.eat(lexer.PLUS)
+            if self.current_token.type == lexer.STRING:
+                node = Concat(node, String(self.current_token))
+                self.eat(lexer.STRING)
+            elif self.current_token.type == lexer.ID:
+                node = Concat(node, self.variable())
         return node
 
     def slot(self):

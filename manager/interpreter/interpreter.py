@@ -22,6 +22,8 @@ TYPE_VAR = 'VAR'
 SYS_OP_OPERATION = 'SysOpOperation'
 VAR_ASSIGN = 'VarAssign'
 RESPONSE_DATA = 'ResponseData'
+OBJECT = 'Object'
+
 SEND = 'send'
 APPEND = 'append'
 REMOVE = 'remove'
@@ -291,6 +293,11 @@ class Interpreter(NodeVisitor):
         else:
             pass
 
+    def visit_Concat(self, node):
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+        return left + right
+
     def visit_Var(self, node):
         var_name = node.value
         if var_name in self.GLOBAL_MEMORY:
@@ -365,7 +372,7 @@ class Interpreter(NodeVisitor):
         for attribute in obj.attributes:
             attribute_name = attribute[0].value
             if key == attribute_name:
-                return attribute[1].value
+                return self.visit(attribute[1])
 
     def visit_Null(self, node):
         return None

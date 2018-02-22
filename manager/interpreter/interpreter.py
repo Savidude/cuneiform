@@ -7,6 +7,7 @@ import random
 from .system import Response
 from .system import InternalDatabase
 from .system import File
+from .system import Http
 
 from .system import String
 from .system import Array
@@ -28,6 +29,7 @@ REMOVE = 'remove'
 VAR = 'Var'
 STRING = 'str'
 ARRAY = 'Array'
+OBJECT = 'Object'
 DATETIME = 'DateTime'
 
 USER_ACTION_COMMAND = 'command'
@@ -347,7 +349,14 @@ class Interpreter(NodeVisitor):
         return self.visit(array)[node.index.value].value
 
     def visit_Object(self, node):
-        return node.attributes
+        obj = []
+        attributes = node.attributes
+        for attribute in attributes:
+            key = attribute[0].value
+            value = self.visit(attribute[1])
+            pair = (key, value)
+            obj.append(pair)
+        return obj
 
     def visit_ObjectElement(self, node):
         object_name = node.name
@@ -381,6 +390,13 @@ class Interpreter(NodeVisitor):
                 if type(property[1]).__name__ == VAR:
                     array = self.visit(property[1])
                     property = (property[0], parser.Array(array))
+                    sys_op.add_property(property)
+                else:
+                    sys_op.add_property(property)
+            elif sys_op.value == lexer.HTTP:
+                if type(property[1]).__name__ == OBJECT:
+                    object = self.visit(property[1])
+                    property = (property[0], object)
                     sys_op.add_property(property)
                 else:
                     sys_op.add_property(property)
@@ -446,6 +462,17 @@ class Interpreter(NodeVisitor):
                         file.update_properties(sys_op)
                     operation_name = node.operation_name
                     return file.execute_operation(operation_name)
+
+                # HTTP system operation
+                elif sys_op.value == lexer.HTTP:
+                    http = sys_op.get_op_object()
+                    if http is None:
+                        http = Http(sys_op)
+                        sys_op.set_op_object(http)
+                    else:
+                        http.update_properties(sys_op)
+                    operation_name = node.operation_name
+                    return http.execute_operation(operation_name)
 
         # Returning back to the node the interpreter was on before a response was sent
         elif node._id == self.node_id:

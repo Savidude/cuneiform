@@ -23,6 +23,7 @@ SYSOP = 'SYSOP'
 RESPONSE = 'RESPONSE'
 INTERNAL_DATABASE = 'INTERNAL_DATABASE'
 FILE = 'FILE'
+HTTP = 'HTTP'
 DATETIME = 'DATETIME'
 EXIT_INTENT = 'ExitIntent'
 INITIATE = 'INITIATE'
@@ -97,6 +98,7 @@ SYSTEM_OPERATIONS = {
     'Response': Token(SYSOP, RESPONSE),
     'InternalDatabase': Token(SYSOP, INTERNAL_DATABASE),
     'File': Token(SYSOP, FILE),
+    'HTTP': Token(SYSOP, HTTP),
     'DateTime': Token(SYSOP, DATETIME),
     'ExitIntent': Token(SYSOP, EXIT_INTENT),
     'Initiate': Token(SYSOP, INITIATE)

@@ -4,6 +4,7 @@ import socket
 import os
 from collections import OrderedDict
 import logging
+from threading import Thread
 
 from interpreter import Lexer as Lexer
 from interpreter import Parser as Parser
@@ -194,6 +195,10 @@ def main():
 
     dialog_manager = multiprocessing.Process(target=init_dialog_manager, args=(max_clients, dialog_manager_port))
     dialog_manager.start()
+
+    # dialog_manager = Thread(target=init_dialog_manager, args=(max_clients, dialog_manager_port))
+    # dialog_manager.start()
+    # dialog_manager.join()
 
 
 if __name__ == '__main__':

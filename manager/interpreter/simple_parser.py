@@ -296,7 +296,7 @@ class SimpleParser(object):
             if self.current_token.type == lexer.IF:
                 self.conditional_statement()
             if self.current_token.type == lexer.SYSOP:
-                if self.current_token.value == lexer.EXIT_INTENT:
+                if self.current_token.value in (lexer.EXIT_INTENT, lexer.INITIATE):
                     self.system_operation()
 
     def system_operation(self):

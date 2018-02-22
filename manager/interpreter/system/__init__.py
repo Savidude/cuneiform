@@ -1,5 +1,6 @@
 from .file import File
 from .internal_database import InternalDatabase
+from .http import Http
 from .response import Response
 from .system_array import Array
 from .system_string import String

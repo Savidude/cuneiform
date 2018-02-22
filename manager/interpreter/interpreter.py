@@ -289,7 +289,10 @@ class Interpreter(NodeVisitor):
                 return self.visit(node.right)
             else:
                 var_name = node.left.value
-                self.GLOBAL_MEMORY[var_name] = self.visit(node.right)
+                if type(node.right).__name__ == OBJECT:
+                    self.GLOBAL_MEMORY[var_name] = node.right
+                else:
+                    self.GLOBAL_MEMORY[var_name] = self.visit(node.right)
         else:
             pass
 
@@ -394,8 +397,17 @@ class Interpreter(NodeVisitor):
                 elif operation_name == REMOVE:
                     array.remove(property[1].value)
             elif sys_op.value == lexer.RESPONSE:
-                if type(property[1]).__name__ == VAR:
+                if type(property[1]).__name__ == VAR and property[0].value == 'responseSet':
                     array = self.visit(property[1])
+                    property = (property[0], parser.Array(array))
+                    sys_op.add_property(property)
+                elif property[0].value == 'responseSet':
+                    array = self.visit(property[1])
+                    for index, value in enumerate(array):
+                        if type(value).__name__ == VAR:
+                            msg = self.visit(value)
+                            string = parser.String(lexer.Token(lexer.STRING, msg))
+                            array[index] = string
                     property = (property[0], parser.Array(array))
                     sys_op.add_property(property)
                 else:
@@ -515,7 +527,7 @@ class Interpreter(NodeVisitor):
                 return result
 
     def visit_ForLoop(self, node):
-        array = self.visit(node.array).array
+        array = self.visit(node.array)
         for value in array:
             left = node.variable
             assign = lexer.Token(lexer.ASSIGN, '=')

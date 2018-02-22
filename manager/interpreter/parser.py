@@ -604,8 +604,7 @@ class Parser(object):
                     right = ArrayElement(name, index)
                 else:
                     if self.current_token.type == lexer.STRING:
-                        key = String(self.current_token)
-                        self.eat(lexer.STRING)
+                        key = self.concat()
                     else:
                         key = self.variable()
                     self.eat(lexer.RSQB)
@@ -649,8 +648,7 @@ class Parser(object):
                 right = ArrayElement(name, index)
             else:
                 if self.current_token.type == lexer.STRING:
-                    key = String(self.current_token)
-                    self.eat(lexer.STRING)
+                    key = self.concat()
                 else:
                     key = self.variable()
                 self.eat(lexer.RSQB)
@@ -824,6 +822,9 @@ class Parser(object):
             self.eat(lexer.LPAREN)
             node = self.expr()
             self.eat(lexer.RPAREN)
+            return node
+        elif token.type == lexer.STRING:
+            node = self.concat()
             return node
         else:
             node = self.variable()

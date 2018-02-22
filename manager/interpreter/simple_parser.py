@@ -482,7 +482,7 @@ class SimpleParser(object):
         self.eat(lexer.LSQB)
         while self.current_token.type != lexer.RSQB:
             if self.current_token.type == lexer.STRING:
-                self.eat(lexer.STRING)
+                self.concat()
             elif self.current_token.type == lexer.LSQB:
                 self.array()
             elif self.current_token.type == lexer.LCB:
@@ -500,7 +500,7 @@ class SimpleParser(object):
             self.variable()
             self.eat(lexer.COL)
             if self.current_token.type == lexer.STRING:
-                self.eat(lexer.STRING)
+                self.concat()
             elif self.current_token.type == lexer.LSQB:
                 self.array()
             elif self.current_token.type == lexer.LCB:

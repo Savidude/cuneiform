@@ -705,11 +705,9 @@ class Parser(object):
         while self.current_token.type != lexer.RSQB:
             if self.current_token.type == lexer.STRING:
                 if 'array' not in locals():
-                    array = [String(self.current_token)]
-                    self.eat(lexer.STRING)
+                    array = [self.concat()]
                 else:
-                    array.append(String(self.current_token))
-                    self.eat(lexer.STRING)
+                    array.append(self.concat())
             elif self.current_token.type == lexer.LSQB:
                 if 'array' not in locals():
                     array = [self.array()]
@@ -737,8 +735,7 @@ class Parser(object):
             variable = self.variable()
             self.eat(lexer.COL)
             if self.current_token.type == lexer.STRING:
-                value = String(self.current_token)
-                self.eat(lexer.STRING)
+                value = self.concat()
             elif self.current_token.type == lexer.LSQB:
                 value = self.array()
             elif self.current_token.type == lexer.LCB:

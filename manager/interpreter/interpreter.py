@@ -191,16 +191,18 @@ class Interpreter(NodeVisitor):
         self.GLOBAL_MEMORY = memory
         self.node_id = node_id
         self.message = message
+        self.initiating = False
 
     def visit_Intent(self, node):
         return self.visit(node.block)
 
     def visit_Block(self, node):
         if type(node.variable_assignments).__name__ == VAR_ASSIGN:
-            for assignment in node.variable_assignments.assign:
-                self.visit(assignment)
-            for declaration in node.variable_assignments.decl:
-                self.visit(declaration)
+            if not self.initiating:
+                for assignment in node.variable_assignments.assign:
+                    self.visit(assignment)
+                for declaration in node.variable_assignments.decl:
+                    self.visit(declaration)
 
         if self.node_id == -1:
             node_list = []
@@ -227,8 +229,10 @@ class Interpreter(NodeVisitor):
 
         if response_data is not None:
             if response_data.action_type == SYSTEM_ACTION_INITIATE:
+                self.initiating = True
                 return self.visit_Block(node)
             else:
+                self.initiating = False
                 return response_data
 
     def visit_Node(self, node):

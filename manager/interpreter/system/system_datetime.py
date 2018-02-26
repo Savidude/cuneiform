@@ -31,3 +31,8 @@ class DateTime(object):
 
     def getSecond(self, name):
         return self.second
+
+    def toString(self, name):
+        date_time_string = str(self.day) + '/' + str(self.month) + '/' + str(self.year) + ' - ' + str(self.hour) + ':' + \
+               str(self.minute) + ':' + str(self.second)
+        return date_time_string

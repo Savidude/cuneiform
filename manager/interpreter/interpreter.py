@@ -421,6 +421,10 @@ class Interpreter(NodeVisitor):
                     object = self.visit(property[1])
                     property = (property[0], object)
                     sys_op.add_property(property)
+                elif type(property[1]).__name__ == VAR:
+                    object = self.visit(self.visit(property[1]))
+                    property = (property[0], object)
+                    sys_op.add_property(property)
                 else:
                     sys_op.add_property(property)
             else:

@@ -153,10 +153,10 @@
 }
 
 .chat-footer {
-    /*margin-left: 3px;*/
+    margin-left: 3px;
+    margin-right: 3px;
     position: absolute;
     bottom: 0;
-    width: 350px;
 }
 
 #code {

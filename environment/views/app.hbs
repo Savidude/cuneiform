@@ -195,11 +195,15 @@
                         <h1 class="display-4 chat-header">Try it now...</h1>
                         <div class="view flex-column align-items-center justify-content-center">
                             <div class="chat-content col">
-                                <div id="message-list" class="chat-messages">
-                                </div>
+                                <div id="message-list" class="chat-messages"></div>
                             </div>
 
                             <div class="chat-footer row align-items-center justify-content-center p-2 pl-4">
+                                <button type="button" class="btn btn-fab btn-info btn-sm" aria-label="Refresh chat"
+                                        onclick="refreshChat()">
+                                    <i class="mdi mdi-refresh"></i>
+                                </button>
+
                                 <div class="form-group col mr-4">
                                     <input type="text" class="form-control" id="message-text" placeholder="Type and hit enter to send message">
                                 </div>

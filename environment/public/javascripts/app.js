@@ -537,3 +537,8 @@ function showNodes() {
         });
     }
 }
+
+function refreshChat() {
+    sessionId = "123";
+    document.getElementById("message-list").innerHTML = "";
+}

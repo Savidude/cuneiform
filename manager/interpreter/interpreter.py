@@ -521,7 +521,9 @@ class Interpreter(NodeVisitor):
             condition = statement[0]
             if self.visit(condition):
                 code_block = statement[1]
-                self.visit(code_block)
+                result = self.visit(code_block)
+                if result is not None:
+                    return result
                 break
 
     def visit_WhileLoop(self, node):

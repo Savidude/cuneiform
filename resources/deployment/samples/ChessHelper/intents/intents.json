@@ -1,7 +1,24 @@
 {
   "intents" : [
     {
+      "name": "WelcomeIntent",
+      "initiative": "mixed",
+      "sample_utterances": [
+        "Hello",
+        "Hi",
+        "Welcome",
+        "Good morning",
+        "Good afternoon",
+        "Good evening",
+        "What's up?",
+        "Yo",
+        "Howdy"
+      ],
+      "slots": []
+    },
+    {
       "name" : "OverviewIntent",
+      "initiative": "user",
       "sample_utterances" : [
         "How do i play",
         "How do i play chess",
@@ -15,6 +32,7 @@
     },
     {
       "name" : "SetupIntent",
+      "initiative": "user",
       "sample_utterances" : [
         "how do i set up a chess game",
         "how do i set up chess",
@@ -26,6 +44,7 @@
     },
     {
       "name" : "GoalIntent",
+      "initiative": "user",
       "sample_utterances" : [
         "how do i win a game",
         "how do i win a game of chess",
@@ -38,6 +57,7 @@
     },
     {
       "name" : "TipIntent",
+      "initiative": "user",
       "sample_utterances" : [
         "can i have a chess tip please",
         "give me a chess tip"
@@ -46,6 +66,7 @@
     },
     {
       "name" : "PieceIntent",
+      "initiative": "user",
       "sample_utterances" : [
         "tell me about {Piece}"
       ],

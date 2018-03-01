@@ -145,7 +145,8 @@
                             </div> <br>
 
                             <div class="col-9 col-md-4">
-                                <button type="button" class="btn btn-primary btn-block">
+                                <button type="button" class="btn btn-primary btn-block" data-toggle="modal"
+                                        data-target="#uploadAppModal">
                                     <i class="mdi mdi-upload"></i>
                                     <span>Upload Existing App</span>
                                 </button>
@@ -176,6 +177,31 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div id="uploadAppModal" class="modal fade" tabindex="-1" role="dialog"
+                 aria-labelledby="uploadAppModal" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createAppModalLabel">Upload Existing Application</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="/operation/upload/app" method="post" enctype="multipart/form-data">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <input type="file" name="application" class="custom-file-input" id="application">
+                                    <label class="custom-file-label" for="customFile">Application path</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Upload Application</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

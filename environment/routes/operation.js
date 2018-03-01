@@ -5,6 +5,9 @@ var path = require('path');
 
 var spawn = require('child_process').spawn;
 
+var formidable = require('formidable');
+var extract = require('extract-zip');
+
 //Instantiating logger
 var winston = require('winston');
 var logger = new (winston.Logger)({
@@ -221,6 +224,48 @@ router.post('/intent/code', function (req, res) {
 
     py.stdin.write(JSON.stringify(input_data));
     py.stdin.end();
+});
+
+/*
+Uploading Cuneiform application
+ */
+router.post('/upload/app', function (req, res) {
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+        var oldPath = files.application.path;
+        var newPath = getApplicationsDir() + path.sep + "app" + (getMaxApp() + 1) + ".zip";
+        fs.rename(oldPath, newPath, function (err) {
+            if (err) {
+                logger.err("Error while uploading application", err);
+            } else {
+                var newAppDir = getApplicationsDir() + path.sep + "app" + (getMaxApp() + 1);
+                extract(newPath, {dir: getApplicationsDir()}, function (err) {
+                    if (err) {
+                        logger.err("Error while renaming directory", err);
+                    } else {
+                        var apps = getDirectories(getApplicationsDir());
+                        apps.forEach(function (app) {
+                            if (!app.startsWith("app")) {
+                                fs.rename(getApplicationsDir() + path.sep + app, newAppDir, function (err) {
+                                    if (err) {
+                                        logger.err("Error while renaming directory", err);
+                                    } else {
+                                        fs.remove(newPath, function (err) {
+                                            if (err) {
+                                                logger.err("Error while removing zip file", err);
+                                            } else {
+                                                res.redirect('/app')
+                                            }
+                                        })
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
 });
 
 module.exports = router;

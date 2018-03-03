@@ -1,0 +1,1 @@
+{"intents": [{"name": "OrderIntent", "slots": [{"name": "type", "type": "custom", "values": [{"name": "delivery", "words": ["delivery"]}, {"name": "takeaway", "words": ["takeaway", "take-away"]}]}, {"name": "time", "type": "datetime", "values": []}]}]}

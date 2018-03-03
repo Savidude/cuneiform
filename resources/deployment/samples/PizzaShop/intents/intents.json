@@ -1,0 +1,54 @@
+{
+  "intents": [
+    {
+      "name": "WelcomeIntent",
+      "initiative": "mixed",
+      "sample_utterances": [
+        "Hello",
+        "Hi",
+        "Welcome",
+        "Good morning",
+        "Good afternoon",
+        "Good evening",
+        "What's up?",
+        "Yo",
+        "Howdy"
+      ],
+      "slots": []
+    },
+    {
+      "name": "OrderIntent",
+      "initiative": "user",
+      "sample_utterances": [
+        "I'm hungry",
+        "I am hungry",
+        "I want to order a pizza",
+        "I want to order pizza",
+        "I want pizza",
+        "Can I get some pizza?"
+      ],
+      "slots": [
+        {
+          "name": "type",
+          "type": "custom",
+          "values": [
+            "delivery",
+            "takeaway"
+          ],
+          "synonyms": [
+            {
+              "value": "takeaway",
+              "synonyms": [
+                "take-away"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "time",
+          "type": "datetime"
+        }
+      ]
+    }
+  ]
+}

@@ -20,6 +20,9 @@ environmentDir=$currentDir/../environment
 cd $environmentDir
 sudo npm install
 
+echo "Installing Bower"
+sudo npm install -g bower
+
 echo "Installing Bower dependencies"
 libDir=$environmentDir/public
 cd $libDir

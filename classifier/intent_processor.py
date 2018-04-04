@@ -129,7 +129,9 @@ def process_intents():
     """ Processes utterance data from intents and writes processed information to a file
     :return: None
     """
+    # List of all the words provided in sample utterances, and their frequency of occurrence
     corpus_words = {}
+    # List of all the words in each intent
     intent_words = {}
     stemmer = LancasterStemmer()
 
@@ -142,7 +144,10 @@ def process_intents():
         sample_utterances = intent['sample_utterances']
         for utterance in sample_utterances:
             slot_detected = False
+
+            # Processing each word in an utterance individually
             for word in word_tokenize(utterance):
+                # Slots are indicated as: {slot_name}. Ignoring slots provided with sample utterances.
                 if word == '{':
                     slot_detected = True
                 elif word == '}':
@@ -150,14 +155,19 @@ def process_intents():
                     continue
 
                 if not slot_detected:
+                    # Stemming a single word in an utterance
                     stemmed_word = stemmer.stem(word.lower())
+                    # Checking if the stemmed word is already available in the word corpus
                     if stemmed_word not in corpus_words:
+                        # Adding stemmed word to corpus
                         corpus_words[stemmed_word] = 1
                     else:
+                        # Incrementing the count of the frequency of occurrence of the word
                         corpus_words[stemmed_word] += 1
 
                     intent_words[name].extend([stemmed_word])
 
+        # Writing processed sample information into a file
         utterance_data = {'corpus_words': corpus_words, 'intent_words': intent_words}
         utterance_data_file_path = get_intents_dir_path() + os.path.sep + 'utterance_data.json'
         with open(utterance_data_file_path, 'w') as out_file:

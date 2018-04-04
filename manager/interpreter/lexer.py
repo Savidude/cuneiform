@@ -64,16 +64,6 @@ class Token(object):
         self.type = type
         self.value = value
 
-    def __str__(self):
-        """ String representation of the class instance
-        Eg:
-            Token(INTEGER_CONST, 3)
-            Token(PLUS, '+')
-        """
-
-    def __repr__(self):
-        return self.__str__()
-
 
 RESERVED_KEYWORDS = {
     'var': Token(VAR, 'var'),
@@ -157,7 +147,7 @@ class Lexer(object):
         return token
 
     def _id(self):
-        """ Handle identifiers and reserved keywords """
+        """ Handle identifiers, reserved keywords, and system operations """
         result = ''
         while self.current_char is not None and (self.current_char.isalnum() or self.current_char == '_'):
             result += self.current_char

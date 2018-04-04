@@ -14,18 +14,18 @@ class AST(object):
         id += 1
 
 
-class UnaryOp(AST):
-    def __init__(self, op, expr):
-        super().__init__()
-        self.token = self.op = op
-        self.expr = expr
-
-
 class Num(AST):
     def __init__(self, token):
         super().__init__()
         self.token = token
         self.value = token.value
+
+
+class UnaryOp(AST):
+    def __init__(self, op, expr):
+        super().__init__()
+        self.token = self.op = op
+        self.expr = expr
 
 
 class String(AST):
@@ -117,8 +117,6 @@ class BinOp(AST):
 
 
 class Var(AST):
-    """ The Var node is constructed out of the ID token. """
-
     def __init__(self, token):
         super().__init__()
         self.token = token
@@ -261,7 +259,7 @@ class Parser(object):
         return intent_node
 
     def block(self):
-        """ block : variable_assignments functions """
+        """ block : variable_assignments nodes """
         assignment_nodes = self.variable_assignments()
         # TODO: Implement functions
         nodes = self.nodes()
@@ -270,7 +268,7 @@ class Parser(object):
 
     def variable_assignments(self):
         """
-        variable_assignments :((assignment | declaration) SEMI)+
+        variable_assignments :((assignment | declaration) SEMI)*
                                 | empty
         """
         if self.current_token.type in (lexer.VAR, lexer.ID):
@@ -319,7 +317,7 @@ class Parser(object):
             return self.empty()
 
     def nodes(self):
-        """ nodes : (node)+ """
+        """ nodes : (node)* """
         node = self.node()
         nodes = [node]
         while self.current_token.type == lexer.NODE:
@@ -431,7 +429,7 @@ class Parser(object):
             return node
 
     def code_block(self):
-        """ code_block : (variable_assignments | conditional_statement | loop | system_operation)+ """
+        """ code_block : (variable_assignments | conditional_statement | loop | system_operation)* """
         while self.current_token.type != lexer.RCB:
             if self.current_token.type in (lexer.VAR, lexer.ID):
                 if self.lexer.current_char == '.':
@@ -470,7 +468,7 @@ class Parser(object):
         return node
 
     def system_operation(self):
-        """ system_operation : ((variable DOT (assignment | operation)) | operation) SEMI """
+        """ system_operation : ((variable DOT (property_assignment | operation)) | operation) SEMI """
         if self.lexer.current_char == '.':
             variable = self.variable()
             self.eat(lexer.DOT)
@@ -490,12 +488,12 @@ class Parser(object):
         return node
 
     def operation(self):
-        """ ID """
+        """ operation : ID """
         operation = self.variable()
         return operation
 
     def property_assignment(self):
-        """ property_assignment : variable ASSIGN (object | array | expr | string) """
+        """ property_assignment : variable ASSIGN (object | array | expr | variable | string | slot | null) """
         variable = self.variable()
         self.eat(lexer.ASSIGN)
         if self.current_token.type == lexer.STRING:
@@ -505,6 +503,10 @@ class Parser(object):
             value = self.array()
         elif self.current_token.type == lexer.LCB:
             value = self.object()
+        elif self.current_token.type == lexer.NULL:
+            value = self.null()
+        elif self.current_token.type == lexer.SLOT:
+            value = self.slot()
         else:
             value = self.expr()
 
@@ -514,7 +516,7 @@ class Parser(object):
     def conditional_statement(self):
         """
         conditional_statement : IF LPAREN conditions RPAREN LCB code_block RCB
-                                | (ELIF LPAREN conditions RPAREN LCB code_block RCB)+
+                                | (ELIF LPAREN conditions RPAREN LCB code_block RCB)*
                                 | ELSE LCB code_block RCB
         """
         self.eat(lexer.IF)
@@ -578,7 +580,7 @@ class Parser(object):
 
     def declaration(self):
         """
-        declaration : VAR variable ((ASSIGN (object | array | string | null | slot | expr) | NEW system_operation) | empty
+        declaration : VAR variable ((ASSIGN (object | array | string | null | variable | slot | expr) | NEW system_operation) | empty
         """
         self.eat(lexer.VAR)
         left = self.variable()
@@ -626,7 +628,9 @@ class Parser(object):
             return left
 
     def assignment(self):
-        """ assignment : variable ASSIGN ((object | array | expr | null | slot | string) | NEW system_operation) """
+        """
+        assignment : variable ASSIGN ((object | array | expr | null | variable | slot | string) | NEW system_operation)
+        """
         left = self.variable()
         assign = self.current_token
         self.eat(lexer.ASSIGN)
@@ -668,7 +672,7 @@ class Parser(object):
         return node
 
     def concat(self):
-        """ string (PLUS (string | variable))* """
+        """ concat: string (PLUS (string | variable))* """
         node = String(self.current_token)
         self.eat(lexer.STRING)
         while self.current_token.type == lexer.PLUS:
@@ -681,7 +685,7 @@ class Parser(object):
         return node
 
     def slot(self):
-        """ SLOT DOT variable"""
+        """ slot: SLOT DOT variable """
         self.eat(lexer.SLOT)
         self.eat(lexer.DOT)
         return Slot(self.variable())
@@ -700,7 +704,7 @@ class Parser(object):
         return NoOp()
 
     def array(self):
-        """ array : LSQB ((string | expr | object | array ) COMMA )* RSQB """
+        """ array : LSQB ((string | expr | variable | object | array ) COMMA )* RSQB """
         self.eat(lexer.LSQB)
         while self.current_token.type != lexer.RSQB:
             if self.current_token.type == lexer.STRING:
@@ -729,7 +733,7 @@ class Parser(object):
         return Array(array)
 
     def object(self):
-        """ object : LCB variable COL ((string | expr | object | array) COMMA)* RCB """
+        """ object : LCB variable COL ((string | expr | variable | object | array) COMMA)* RCB """
         self.eat(lexer.LCB)
         while self.current_token.type != lexer.RCB:
             variable = self.variable()
@@ -798,6 +802,7 @@ class Parser(object):
                 | REAL_CONST
                 | LPAREN expr RPAREN
                 | variable
+                | string
         """
         token = self.current_token
 
@@ -830,27 +835,33 @@ class Parser(object):
     def parse(self):
         """
         intent : variable LCB block RCB
-        block : variable_assignments functions
-        variable_assignments :((assignment | declaration) SEMI)+
+        block : variable_assignments nodes
+        variable_assignments :((assignment | declaration) SEMI)*
                                 | empty
-        functions : (function)+
-        function : FUNCTION variable LCB container RCB
-        container : PRIORITY COL expr SEMI PRECONDITIONS LCB conditions RCB
-                    ACTION LCB code_block RCB TODO: more to implement
+        nodes : (node)*
+        node : NODE variable LCB container RCB
+        container : PRIORITY COL expr SEMI PRECONDITIONS LCB conditions RCB ACTION LCB code_block RCB
         conditions : condition ((AND | OR) condition)*
-        condition : ((expr | variable | string) (EQUAL | NEQUAL | LESS | GREATER | LEQUAL | GEQUAL)
-                    (expr | variable | string))
+        condition : ((expr | variable | string | null | slot) (EQUAL | NEQUAL | LESS | GREATER | LEQUAL | GEQUAL)
+                    (expr | variable | string| null | slot))
                     | (LPAREN conditions RPAREN)
-        code_block : (variable_assignment | conditional_statement | loop)+
-        loop : WHILE LPAREN conditions RPAREN LCB code_block RCB # TODO: Implement foreach loops
+        code_block : (variable_assignments | conditional_statement | loop | system_operation)*
+        system_operation : ((variable DOT (property_assignment | operation)) | operation) SEMI
+        operation : ID
+        property_assignment : variable ASSIGN (object | array | expr | variable | string | slot | null)
         conditional_statement : IF LPAREN conditions RPAREN LCB code_block RCB
-                                | (ELIF LPAREN conditions RPAREN LCB code_block RCB)+
+                                | (ELIF LPAREN conditions RPAREN LCB code_block RCB)*
                                 | ELSE LCB code_block RCB
-        declaration : VAR variable ((ASSIGN (string | expr)) | empty)
-                    | OBJ variable ((ASSIGN object) | empty)
-        assignment : variable ASSIGN (object | expr | string)
-        variable : ID
-        empty :
+        loop : (WHILE LPAREN conditions RPAREN LCB code_block RCB)
+               | (FOR variable IN variable LCB code_block RCB)
+        declaration : VAR variable ((ASSIGN (object | array | string | null | variable | slot | expr) | NEW system_operation) | empty
+        assignment : variable ASSIGN ((object | array | expr | null | variable | slot | string) | NEW system_operation)
+        concat: string (PLUS (string | variable))*
+        slot: SLOT DOT variable
+        variable : (ID | SYSOP)
+        array : LSQB ((string | expr | variable | object | array ) COMMA )* RSQB
+        object : LCB variable COL ((string | expr | variable | object | array) COMMA)* RCB
+        null : NULL
         expr : term ((PLUS | MINUS) term)*
         term : factor ((MUL | INTEGER_DIV | FLOAT_DIV) factor)*
         factor : PLUS factor
@@ -859,6 +870,7 @@ class Parser(object):
                 | REAL_CONST
                 | LPAREN expr RPAREN
                 | variable
+                | string
         """
         node = self.intent()
         if self.current_token.type != lexer.EOF:

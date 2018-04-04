@@ -49,8 +49,6 @@ RESPONSE_INVALID_VARIABLE = 404
 
 
 class NodeVisitor(object):
-    """ AST Visitors (walkers) """
-
     def visit(self, node):
         function_name = 'visit_' + type(node).__name__
         visitor = getattr(self, function_name, self.generic_visit)
@@ -183,8 +181,6 @@ class BuiltinTypeSymbol(Symbol):
 
 
 class Interpreter(NodeVisitor):
-    """ Intent Interpreter """
-
     def __init__(self, tree, message, slots, memory, node_id):
         self.tree = tree
         self.slots = slots

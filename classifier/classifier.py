@@ -3,6 +3,7 @@ import os
 import logging
 import socket
 import multiprocessing
+from threading import Thread
 
 from nltk.tokenize import word_tokenize
 from nltk.stem.lancaster import LancasterStemmer
@@ -11,6 +12,8 @@ import sqlite3
 from sqlite3 import Error
 
 from dateparser.search import search_dates
+from word2number import w2n
+from itertools import combinations
 
 logging.basicConfig(filename=os.getcwd().replace('classifier', '') + 'system.log',
                     level=logging.INFO,
@@ -76,6 +79,10 @@ def create_connection():
 
 
 def identify_datetime(message):
+    """ Identifies datetime values from an utterance
+    :param message: Utterance made by the user
+    :return: Datetime value in the form of a dictionary
+    """
     dates = search_dates(message)
     if dates is not None:
         identified_datetime = dates[-1][1]
@@ -87,6 +94,38 @@ def identify_datetime(message):
         datetime_data['minute'] = identified_datetime.minute
         datetime_data['second'] = identified_datetime.second
         return datetime_data
+    return None
+
+
+def identify_number(message):
+    """ Identifies a number from an utterance
+    :param message: Utterance made by the user
+    :return: number in an utterance
+    """
+    single_words = message.split()
+    word_sets = []
+    # Getting all possible consecutive word combinations in the utterance
+    for start, end in combinations(range(len(single_words)), 2):
+        word_sets.append(single_words[start:end + 1])
+    # Sorting word combinations by size in decending order
+    sorted_words = sorted(word_sets, key=len, reverse=True)
+    for set in sorted_words:
+        words = ''
+        for word in set:
+            words += word + ' '
+        try:
+            # Finding number in word combination
+            number = w2n.word_to_num(words)
+            return number
+        except ValueError:
+            pass
+    # Finding numbers in each individual word
+    for word in single_words:
+        try:
+            number = w2n.word_to_num(word)
+            return number
+        except ValueError:
+            pass
     return None
 
 
@@ -121,7 +160,12 @@ def identify_slot_values(intent_name, message):
                         datetime_data = {'type': 'DateTime', 'value': identified_datetime}
                         slot_data = {'intent': intent_name, 'slot': slot['name'], 'value': datetime_data}
                         identified_slots.append(slot_data)
-                # TODO: Implement number slots
+                elif slot_type == "number":
+                    identified_number = identify_number(message)
+                    if identified_number is not None:
+                        number_data = {'type': 'Number', 'value': identified_number}
+                        slot_data = {'intent': intent_name, 'slot': slot['name'], 'value': number_data}
+                        identified_slots.append(slot_data)
 
     for i, message_word in enumerate(tokenized_message):
         message_word = stemmer.stem(message_word)
@@ -232,7 +276,7 @@ def classify(session_id, message, conn):
             intent_scores = calculate_intent_scores(message)
 
             # print(slots_data)
-            # print(intent_score)
+            # print(intent_scores)
             message_process_data = {'intent_scores': intent_scores, 'slots_data': slots_data}
             return message_process_data
         else:
@@ -385,6 +429,10 @@ def main():
 
     classifier = multiprocessing.Process(target=init_classifier, args=(max_clients, port, conn, dialog_manager_port))
     classifier.start()
+
+    # dialog_manager = Thread(target=init_classifier, args=(max_clients, port, conn, dialog_manager_port))
+    # dialog_manager.start()
+    # dialog_manager.join()
 
 
 if __name__ == '__main__':

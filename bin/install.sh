@@ -10,6 +10,10 @@ pip3 install dateparser
 echo "Installing requests"
 pip3 install requests
 
+echo "Installing word2number"
+pip3 install word2number
+pip3 install future
+
 currentDir=$PWD
 knowledgeDir=$currentDir/../resources/knowledge/db
 touch $knowledgeDir/system.db

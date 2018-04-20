@@ -33,6 +33,7 @@ STRING = 'str'
 ARRAY = 'Array'
 OBJECT = 'Object'
 DATETIME = 'DateTime'
+NUMBER = 'Number'
 
 USER_ACTION_COMMAND = 'command'
 USER_ACTION_CONFIRM = 'confirm'
@@ -318,6 +319,8 @@ class Interpreter(NodeVisitor):
                     if type(slot_value).__name__ == 'dict':
                         if slot_value['type'] == DATETIME:
                             return DateTime(slot_value['value'])
+                        if slot_value['type'] == NUMBER:
+                            return slot_value['value']
                     else:
                         return slot_value
             return None

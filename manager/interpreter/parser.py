@@ -733,7 +733,7 @@ class Parser(object):
         return Array(array)
 
     def object(self):
-        """ object : LCB variable COL ((string | expr | variable | object | array) COMMA)* RCB """
+        """ object : LCB variable COL ((string | expr | variable | object | array | slot) COMMA)* RCB """
         self.eat(lexer.LCB)
         while self.current_token.type != lexer.RCB:
             variable = self.variable()
@@ -744,6 +744,8 @@ class Parser(object):
                 value = self.array()
             elif self.current_token.type == lexer.LCB:
                 value = self.object()
+            elif self.current_token.type == lexer.SLOT:
+                value = self.slot()
             else:
                 value = self.expr()
 

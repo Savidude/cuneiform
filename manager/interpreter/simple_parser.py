@@ -431,6 +431,8 @@ class SimpleParser(object):
                 self.array()
             elif self.current_token.type == lexer.LCB:
                 self.object()
+            elif self.current_token.type == lexer.SLOT:
+                self.slot()
             else:
                 self.expr()
 

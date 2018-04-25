@@ -102,12 +102,17 @@ class Http(object):
         if method == METHOD_GET:
             r = requests.get(self.url, data=self.data)
         elif method == METHOD_POST:
-            r = requests.post(self.url, data=self.data)
+            r = requests.post(self.url, json=self.data)
         elif method == METHOD_PUT:
-            r = requests.put(self.url, data=self.data)
+            r = requests.put(self.url, json=self.data)
         elif method == METHOD_DELETE:
-            r = requests.delete(self.url, data=self.data)
+            r = requests.delete(self.url, json=self.data)
         result = r.json()
 
-        object = self.parse_dict(result)
+        # object = self.parse_dict(result)
+        # return object
+        if type(result).__name__ == DICT:
+            object = self.parse_dict(result)
+        elif type(result).__name__ == LIST:
+            object = self.parse_list(result)
         return object

@@ -163,7 +163,7 @@ def identify_slot_values(intent_name, message):
                 elif slot_type == "number":
                     identified_number = identify_number(message)
                     if identified_number is not None:
-                        number_data = {'type': 'Number', 'value': identified_number}
+                        number_data = {'type': 'Number', 'value': int(identified_number)}
                         slot_data = {'intent': intent_name, 'slot': slot['name'], 'value': number_data}
                         identified_slots.append(slot_data)
 

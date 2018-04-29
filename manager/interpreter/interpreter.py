@@ -300,7 +300,7 @@ class Interpreter(NodeVisitor):
     def visit_Concat(self, node):
         left = self.visit(node.left)
         right = self.visit(node.right)
-        return left + right
+        return str(left) + str(right)
 
     def visit_Var(self, node):
         var_name = node.value
@@ -536,7 +536,7 @@ class Interpreter(NodeVisitor):
                 return result
 
     def visit_ForLoop(self, node):
-        array = self.visit(node.array)
+        array = self.visit(node.array).array
         for value in array:
             left = node.variable
             assign = lexer.Token(lexer.ASSIGN, '=')

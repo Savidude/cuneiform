@@ -1,0 +1,6 @@
+{
+	"server_url" : "https://api.dialog.lk/sms/send",
+	"app_id" : "APP_ID",
+	"app_password" : "APP_PASSWORD",
+	"keyword" : "APP_KEYWORD"
+}

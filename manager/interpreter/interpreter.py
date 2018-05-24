@@ -536,7 +536,9 @@ class Interpreter(NodeVisitor):
                 return result
 
     def visit_ForLoop(self, node):
-        array = self.visit(node.array).array
+        array = self.visit(node.array)
+        if type(array).__name__ != LIST:
+            array = array.array
         for value in array:
             left = node.variable
             assign = lexer.Token(lexer.ASSIGN, '=')

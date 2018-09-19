@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys
 import json
 import os
@@ -9,7 +11,7 @@ import socket
 import sqlite3
 from sqlite3 import Error
 
-logging.basicConfig(filename=os.getcwd().replace('responder', '') + 'system.log',
+logging.basicConfig(filename=os.getcwd().replace('responder', '') + '/system.log',
                     level=logging.INFO,
                     format='%(asctime)s - %(filename)s [%(levelname)s]: %(message)s')
 
@@ -81,9 +83,10 @@ def get_session(conn, sessionid):
         cur.execute(query, (sessionid,))
         rows = cur.fetchall()
         if len(rows) == 0:
-            sessionid = get_session_id(8)
-            if create_session(conn, sessionid) is not None:
-                return sessionid
+            new_sessionid = get_session_id(8)
+            logging.info("Invalid/expired session " + sessionid + ". Creating new session " + new_sessionid)
+            if create_session(conn, new_sessionid) is not None:
+                return new_sessionid
             else:
                 return None
         else:
@@ -100,7 +103,10 @@ def get_session(conn, sessionid):
 
 
 def main():
+    logging.info("test")
     input_data = sys.stdin.readlines()
+    logging.info("Message received: " + input_data[0])
+
     input = json.loads(input_data[0])
     sessionid = input['sessionid']
     message = input['message']

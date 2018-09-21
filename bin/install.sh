@@ -30,4 +30,4 @@ sudo npm install -g bower
 echo "Installing Bower dependencies"
 libDir=$environmentDir/public
 cd $libDir
-sudo bower install
+sudo bower install --allow-root

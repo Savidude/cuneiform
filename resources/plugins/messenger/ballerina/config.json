@@ -1,0 +1,5 @@
+{
+  "verify_token": "<VERIFY_TOKEN>",
+  "access_token": "<ACCESS_TOKEN>",
+  "responder_path": "<PATH_TO_responder.py>"
+}

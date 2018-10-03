@@ -21,12 +21,13 @@ echo "Starting dialog manager process"
 cd $managerDir
 python3 dialog_manager.py &
 dialogManagerPID=$!
-cd $environmentDir
-npm start
 
 trap "
-    kill $responderPID &
-    kill $classifierPID &
-    kill $dialogManagerPID;
+    kill -9 $responderPID
+    kill -9 $classifierPID
+    kill -9 $dialogManagerPID
     exit
-" SIGINT
+" SIGINT EXIT INT TERM
+
+cd $environmentDir
+npm start

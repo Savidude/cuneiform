@@ -83,6 +83,7 @@ def init_dialog_manager(max_clients, dialog_manager_port):
     host = socket.gethostname()
     dialog_manager_port = dialog_manager_port
     server_socket = socket.socket()
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
     server_socket.bind((host, dialog_manager_port))
     server_socket.listen(max_clients)
 

@@ -64,6 +64,7 @@ def init_responder(max_clients, port, classifier_port):
     host = socket.gethostname()
     port = port
     server_socket = socket.socket()
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
     server_socket.bind((host, port))
     server_socket.listen(max_clients)
 
